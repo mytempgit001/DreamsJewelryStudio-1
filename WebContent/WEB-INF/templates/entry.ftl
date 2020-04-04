@@ -6,74 +6,18 @@
 
       <!-- Main Content -->
       <div id="content">
-</@sidebar.page>
+	</@sidebar.page>
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">
-          		${tableName}
-       	  </h1>
-          	<div class="dropdown mb-4">
-          	Click here if you want to 
-               <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                 Dropdown
-               </button>
-               <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
-                 <a class="dropdown-item" href="http://localhost:8080/admin/modifying?table=${tableName}&operation=INSERT">INSERT</a>
-                 <a class="dropdown-item" href="#">UPDATE</a>
-                 <a class="dropdown-item" href="#">DELETE</a>
-               </div>
-               entries.
-             </div>
+          <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
 
-          <!-- DataTales Example -->
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            	<h6 class="m-0 font-weight-bold text-primary">Set parameters</h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <#if fields??>
-	                      <#list fields as f>
-	                    	  <th>${f}</th>
-	                      </#list>
-                      </#if>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  		<#if items??>
-                    		<#list items as str>
-                    			<tr>
-                    			<#list str as i>
-	                    	 	 	<td style="white-space: nowrap; overflow: hidden; text-overflow:ellipsis">${i}</td>
-	                    	  	</#list>
-	                    	  	</tr>
-	                      	</#list>
-                    	</#if>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
         </div>
         <!-- /.container-fluid -->
 
       </div>
       <!-- End of Main Content -->
-
-      <!-- Footer -->
-      <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
-      <!-- End of Footer -->
 
     </div>
     <!-- End of Content Wrapper -->

@@ -63,7 +63,7 @@ public class CartController {
 		
 		Item item = itemService.findItemById(itemID);
 		item.setQuantity(qty);
-		item.setPrice(item.getPriceperone() * qty);
+		item.setPrice(item.getPricePerOne() * qty);
 		itemService.updateItem(item);
 		
 		return "SUCCESS";

@@ -62,7 +62,7 @@ public class CatalogController {
 		if(filterBy!=null) 
 			products = productService.getAllProdcutsByType(filterBy, range[0], range[1]);
 		else
-			products = productService.getAllProducts(range[0], range[1]);
+			products = productService.getAllProductsWithChildrenLimit(range[0], range[1]);
 		 
 		
 		if(sortBy!=null) 

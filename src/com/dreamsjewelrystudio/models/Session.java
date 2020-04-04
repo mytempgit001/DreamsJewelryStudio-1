@@ -24,14 +24,11 @@ public class Session {
 	@Column(name = "token")
 	private String token;
 	
-//	@Column(name = "userID")
-//	private long userID;
+	@Column(name = "lastUsed")
+	private String lastUsed;
 	
 	@OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<Item> items;
-	
-	@Column(name = "lastUsed")
-	private String lastUsed;
 	
 	public long getSessID() {
 		return sessID;

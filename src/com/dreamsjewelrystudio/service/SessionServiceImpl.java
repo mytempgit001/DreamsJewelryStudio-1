@@ -1,5 +1,7 @@
 package com.dreamsjewelrystudio.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,4 +22,7 @@ public class SessionServiceImpl {
 		return sessRepo.saveAndFlush(session);
 	}
 	
+	public List<Session> findAll(){
+		return sessRepo.findAll();
+	}
 }

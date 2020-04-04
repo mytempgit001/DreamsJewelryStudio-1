@@ -19,9 +19,8 @@ public class ProductPriceSize implements Comparable<ProductPriceSize>{
 	@Column(name="price_id")
 	private long price_id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable=false, updatable=false)
-	private Product product;
+	@Column(name = "product_id")
+	private long product_id;
 	
 	@Column(name="price")
 	private Float price;
@@ -38,6 +37,10 @@ public class ProductPriceSize implements Comparable<ProductPriceSize>{
 	@Column(name="quantity")
 	private Integer quantity;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", insertable=false, updatable=false)
+	private Product product;
+	
 	public long getPriceId() {
 		return price_id;
 	}
@@ -92,6 +95,14 @@ public class ProductPriceSize implements Comparable<ProductPriceSize>{
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+	
+	public long getProduct_id() {
+		return product_id;
+	}
+
+	public void setProduct_id(long product_id) {
+		this.product_id = product_id;
 	}
 
 	@Override

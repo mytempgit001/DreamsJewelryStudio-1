@@ -1,5 +1,7 @@
 package com.dreamsjewelrystudio.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +16,9 @@ public class MessagesServiceImpl {
 	
 	public void updateMessage(Messages msg) {
 		msgRepo.saveAndFlush(msg);
+	}
+	
+	public List<Messages> findAll(){
+		return msgRepo.findAll();
 	}
 }

@@ -25,15 +25,15 @@ public class ProductServiceImpl{
 	@Autowired
 	private ProductPriceSizeRepository productPriceSizeRepo;
 	
-	public List<Product> getAll(){
-		return productRepo.findAll();
+	public List<Product> getAllWithChildren(){
+		return getProductChildren(productRepo.findAll());
 	}
 	
 	public int selectCountProduct() {
 		return productRepo.selectProductCount();
 	}
 	
-	public List<Product> getAllProducts(int from, int limit){
+	public List<Product> getAllProductsWithChildrenLimit(int from, int limit){
 		List<Product> products = productRepo.selectProductLimit(from, limit);
 		return getProductChildren(products);
 	}

@@ -20,19 +20,11 @@ public class Item {
     @Column(name = "itemID")
 	private long itemID;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sessID", insertable = false, updatable = false)
-	private Session session;
-	
 	@Column(name = "productID")
 	private long productID;
 	
 	@Column(name = "sessID")
 	private long sessID;
-	
-	@OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "productID", referencedColumnName = "product_id", insertable = false, updatable = false)
-	private Product product;
 	
 	@Column(name = "quantity")
 	private Integer quantity;
@@ -46,7 +38,15 @@ public class Item {
 	@Column(name = "priceperone")
 	private float priceperone;
 	
-	public float getPriceperone() {
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sessID", insertable = false, updatable = false)
+	private Session session;
+	
+	@OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "productID", referencedColumnName = "product_id", insertable = false, updatable = false)
+	private Product product;
+	
+	public float getPricePerOne() {
 		return priceperone;
 	}
 	public void setPricePerOne(float priceperone) {

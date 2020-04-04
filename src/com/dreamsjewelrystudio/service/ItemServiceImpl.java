@@ -19,6 +19,10 @@ public class ItemServiceImpl {
 	
 	@Autowired
 	private ProductServiceImpl productService;
+	
+	public List<Item> findAll(){
+		return itemRepo.findAll();
+	}
 
 	public Item updateItem(Item item) {
 		return itemRepo.saveAndFlush(item);
