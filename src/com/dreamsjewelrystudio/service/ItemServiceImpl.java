@@ -18,7 +18,7 @@ public class ItemServiceImpl {
 	private ItemRepository itemRepo;
 	
 	@Autowired
-	private ProductServiceImpl productService;
+	private ProductServiceImpl prdSrvc;
 	
 	public List<Item> findAll(){
 		return itemRepo.findAll();
@@ -44,7 +44,7 @@ public class ItemServiceImpl {
 		List<Item> items = itemRepo.findItemsBySessionId(sessID);
 		List<Product> products = new ArrayList<>();
 		items.stream().forEach(item -> products.add(item.getProduct()));
-		productService.getProductChildren(products);
+		prdSrvc.getProductChildren(products);
 		return items;
 	}
 	
@@ -57,7 +57,7 @@ public class ItemServiceImpl {
 	}
 	
 	public Item findItemById(long itemID) {
-		return itemRepo.findItemById(itemID);
+		return itemRepo.getOne(itemID);
 	}
 	
 	public void updateQuantity(long itemID, int qty) {

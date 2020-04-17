@@ -20,6 +20,4 @@ public interface ItemRepository extends JpaRepository<Item, Long>{
 	@Query(value="UPDATE item SET quantity = ?2 WHERE itemID = ?1", nativeQuery = true)
 	void updateQuantity(long id, int qty);
 	
-	@Query(value="SELECT * FROM item WHERE itemID=?1", nativeQuery = true)
-	Item findItemById(long itemID);
 }

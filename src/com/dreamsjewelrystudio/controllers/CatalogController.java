@@ -63,7 +63,6 @@ public class CatalogController {
 			products = productService.getAllProdcutsByType(filterBy, range[0], range[1]);
 		else
 			products = productService.getAllProductsWithChildrenLimit(range[0], range[1]);
-		 
 		
 		if(sortBy!=null) 
 			switch(sortBy) {
@@ -79,7 +78,7 @@ public class CatalogController {
 		return "catalog";
 	}
 	
-	public List<String> getSorts(String sort){
+	private List<String> getSorts(String sort){
 		List<String> names = new ArrayList<>();
 		
 		names.add("<option value=\"All\">All</option>");
@@ -103,7 +102,7 @@ public class CatalogController {
 		return names;
 	}
 	
-	public List<String> getFilters(String filter) {
+	private List<String> getFilters(String filter) {
 		List<String> names = new ArrayList<>();
 		
 		names.add("<option value=\"All pieces\">All pieces</option>");
@@ -133,7 +132,7 @@ public class CatalogController {
 		return names;
 	}
 	
-	public String insertIntoString(String originalStr) {
+	private String insertIntoString(String originalStr) {
 		int index = 7;
 		String temp1 = originalStr.substring(0, index);
 		String temp2 = originalStr.substring(index, originalStr.length());
@@ -177,7 +176,7 @@ public class CatalogController {
 			HttpServletRequest request, HttpServletResponse response,
 			Model model) {
 		try {
-			Product product = productService.getProductByID(productID, false, true);
+			Product product = productService.getProductByID(productID, true, true);
 			if(Objects.isNull(product))
 				return "DENIAL OF SERVICE (no product was found)";
 			

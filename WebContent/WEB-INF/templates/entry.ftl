@@ -1,7 +1,9 @@
 <#import "parts/aleftsidebar.ftl" as sidebar>
 
 <#if operation??>
-<#import "crud-contents/${operation}/${table}.ftl" as entry>
+	<#if table??>
+		<#import "crud-contents/${operation}/${table}.ftl" as entry>
+	</#if>
 </#if>
 
 <@sidebar.page>

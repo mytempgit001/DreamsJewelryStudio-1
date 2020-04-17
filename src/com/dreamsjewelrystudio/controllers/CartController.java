@@ -34,8 +34,10 @@ public class CartController {
 			if(currentSession!=null) {
 				List<Item> items = itemService.getItemsAndProductWtihChildrenWithSessionId(currentSession.getSessID());
 				float totalPrice = 0f;
-				for(int i = 0; i < items.size(); i++) 
+				for(int i = 0; i < items.size(); i++) { 
+					System.out.println(items.get(i).getPricePerOne());
 					totalPrice+=items.get(i).getPrice();
+				}
 				
 				model.addAttribute("items", items);
 				model.addAttribute("totalPrice", totalPrice);

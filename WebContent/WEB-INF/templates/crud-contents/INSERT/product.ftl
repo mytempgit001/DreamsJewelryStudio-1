@@ -21,14 +21,32 @@
 				<input id="material" class="requiredInputs"></input> 
 				<br>
 				<label>product_type:</label> <code>*</code> 
-				<input onclick="selectOnlyThis('Check1')" id="Check1" type="checkbox" name="option1" value="Resin" checked> Resin 
-				<input onclick="selectOnlyThis('Check2')" id="Check2" type="checkbox" name="option2" value="Gemstone"> Gemstone 
+				<input onclick="selectOnlyProdType('Check1')" id="Check1" type="checkbox" name="option1" value="Resin" checked> Resin 
+				<input onclick="selectOnlyProdType('Check2')" id="Check2" type="checkbox" name="option2" value="Gemstone"> Gemstone 
+				<br>
+				<div align="center">
+					<label>category:</label> <code>*</code> 
+					<div style="display: flex;flex-direction: column;justify-content: space-between;">
+						<input onclick="selectOnlyCategory('category1')" id="category1" type="checkbox" name="option1" value="Earrings" checked> Earrings 
+						<input onclick="selectOnlyCategory('category2')" id="category2" type="checkbox" name="option2" value="Bracelets"> Bracelets
+						<input onclick="selectOnlyCategory('category3')" id="category3" type="checkbox" name="option3" value="Rings"> Rings 
+						<input onclick="selectOnlyCategory('category4')" id="category4" type="checkbox" name="option4" value="Necklaces"> Necklaces
+					</div>
+				</div>
 				<br>
 				<script>
-				function selectOnlyThis(id) {
+				function selectOnlyProdType(id) {
 				    for (var i = 1;i <= 2; i++)
 				    {
 				        document.getElementById("Check" + i).checked = false;
+				    }
+				    document.getElementById(id).checked = true;
+				}
+				
+				function selectOnlyCategory(id) {
+				    for (var i = 1;i <= 4; i++)
+				    {
+				        document.getElementById("category" + i).checked = false;
 				    }
 				    document.getElementById(id).checked = true;
 				}
@@ -43,17 +61,17 @@
 					<div id="priceSizeBlock" align="right">
 						<div class='myPriceSize'>
 							<br>
-							<label>price:</label> <code>*</code> 
-							<input class="requiredInputs priceSize"></input> 
+							<label>price:</label> <code style='color:blue;'>I</code> <code>*</code>
+							<input class="requiredInputs priceSize numberic"></input> 
 							<br>
 							<label>size:</label> <code>*</code> 
 							<input class="requiredInputs priceSize"></input> 
 							<br>
-							<label>discount_price:</label> 
-							<input class="priceSize"></input> 
+							<label>discount_price:</label> <code style="color:blue;">I</code>
+							<input class="priceSize numberic"></input> 
 							<br>
-							<label>quantity:</label> <code>*</code> 
-							<input class="requiredInputs priceSize"></input> 
+							<label>quantity:</label> <code style="color:blue;">I</code> <code>*</code>
+							<input class="requiredInputs priceSize numberic"></input> 
 						</div>
 					</div>
 					<br>
@@ -64,17 +82,17 @@
 						function add(){
 							var newDiv = document.createElement("div");
 							newDiv.innerHTML = "<div class='myPriceSize' align='right'><br><br> "+
-											"<label>price:</label> <code>*</code> "+
-											"<input class='requiredInputs priceSize'> </input> "+
+											"<label>price:</label> <code style='color:blue;'>I</code> <code>*</code> "+
+											"<input class='requiredInputs priceSize numberic'> </input> "+
 											"<br>"+
 											"<label>size:</label> <code>*</code> "+
 											"<input class='requiredInputs priceSize'></input> "+
 											"<br>"+
-											"<label>discount_price:</label> "+
-											"<input class='priceSize'></input> "+
+											"<label>discount_price:</label> <code style='color:blue;'>I</code> "+
+											"<input class='priceSize numberic'></input> "+
 											"<br>"+
-											"<label>quantity:</label> <code>*</code> "+
-											"<input class='requiredInputs priceSize'></input> </div>";
+											"<label>quantity:</label> <code style='color:blue;'>I</code> <code>*</code> "+
+											"<input class='requiredInputs priceSize numberic'></input> </div>";
 							var element = document.getElementById("priceSizeBlock");
 							element.appendChild(newDiv);
 						}		
@@ -152,6 +170,8 @@
 						discountPrice : discountPrice,
 						quantity : quantity
 					});
+					
+					if(discountPrice==0) priceSize[2].value = 0;
 				}
 				return data;
 			}
@@ -165,6 +185,17 @@
        		        }
        		    }
 				return prodType;
+			}
+			
+			function getCategory(){
+				var category = "";
+				for (var i = 1; i <= 4; i++){
+       				var checkBox = document.getElementById("category" + i);
+       		        if(checkBox.checked == true){
+       		        	category = checkBox.value;
+       		        }
+       		    }
+				return category;
 			}
 		
 			function insert(){
@@ -185,6 +216,11 @@
 				var product_type = getProductType();
 				var priceSize = getPriceSize();
 				var images = getImages();
+				var category = getCategory();
+				
+				if(!checkForNumbers())
+					return;
+				
 				$.ajax({
 			 	    url: "/admin/modify",
 			 	    dataType: "json",
@@ -195,13 +231,16 @@
 						main_img : document.getElementById("main_img").value,
 						material : document.getElementById("material").value,
 						product_type : product_type,
+						category : category,
 						images : images, 
 						price : priceSize
 			 	    }),
 			 	    cache: false,
 			 	    type: "POST",
 			 	    success: function(data) {
-			 	    	console.log(data);
+				 		if(data == "SUCCESS"){
+				 			alert("New item was inserted");
+				 		}
 			 	    },
 			 	    error: function(xhr) {
 			 	    	console.log(xhr.responseText);
@@ -209,25 +248,16 @@
 			     });
 			}
 			
-			function test(){
-				var images = getImages();
-				var priceSize = getPriceSize();
-				$.ajax({
-			 	    url: "/admin/modify",
-			 	    data: {
-			 	    	"name" : "happy b-day",
-			 	    	"myInt" : 32,
-			 	    },
-			 	    cache: false,
-			 	    type: "POST",
-			 	    success: function(data) {
-			 	    	console.log(data);
-			 	    },
-			 	    error: function(xhr) {
-			 	    	console.log(xhr.responseText);
-			 	    }
-			     });
-				console.log("dasdasdas")
+			function checkForNumbers(){
+				var numbers = /^[-+]?[0-9]+$/;
+				var inputs = document.querySelectorAll(".numberic");	
+				for(var i = 0; i < inputs.length; i++){
+					if(!inputs[i].value.match(numbers)){
+						alert("Fields that marked as I are able to contain only numberic value");
+						return false;
+					}
+				}
+				return true;
 			}
 		</script>
 	</div>

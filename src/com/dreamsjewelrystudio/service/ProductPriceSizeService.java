@@ -12,9 +12,17 @@ import com.dreamsjewelrystudio.repository.ProductPriceSizeRepository;
 public class ProductPriceSizeService {
 
 	@Autowired
-	private ProductPriceSizeRepository productPriceSizeRepo;
+	private ProductPriceSizeRepository prsRepository;
 	
 	public List<ProductPriceSize> findAll(){
-		return productPriceSizeRepo.findAll();
+		return prsRepository.findAll();
+	}
+	
+	public ProductPriceSize persistsEntry(ProductPriceSize prs) {
+		return prsRepository.saveAndFlush(prs);
+	}
+	
+	public List<ProductPriceSize> persistsAll(List<ProductPriceSize> prs) {
+		return prsRepository.saveAll(prs);
 	}
 }

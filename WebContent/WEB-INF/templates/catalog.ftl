@@ -41,7 +41,7 @@
 	                    <img class="img-responsive img-hover" src="${product.main_img}" style="box-shadow: 0 0 10px rgba(0,0,0,0.5);" alt="" width:"700" height:"300">
 	                </a>
 	                <h3 style="white-space: nowrap; overflow: hidden; text-overflow:ellipsis">
-	                    <a class="listenersClass">${product.name}</a>
+	                    <a src="${product.main_img}" class="listenersClass">${product.name}</a>
 	                </h3>
 	                <h4 style="color:#228D57;">
                 		$

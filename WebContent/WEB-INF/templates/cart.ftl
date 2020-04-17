@@ -130,7 +130,7 @@
 			    				<script>
 			    					var selectWidget = document.getElementById("cd2_${item?index}");
 			    					selectWidget.addEventListener("change", function(){
-			    						var newPrice = parseFloat("${item.priceperone}".replace(",", ".")) * document.getElementById("cd2_${item?index}").value;
+			    						var newPrice = parseFloat("${item.getPricePerOne()}".replace(",", ".")) * document.getElementById("cd2_${item?index}").value;
 			    						document.getElementById("tp_${item?index}").innerText = "$ " + newPrice.toFixed(1).replace(".", ",");
 			    						changeAmount(${item.itemID}, document.getElementById("cd2_${item?index}").value);
 		    						});

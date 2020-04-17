@@ -1,5 +1,6 @@
 package com.dreamsjewelrystudio.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -14,7 +15,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "product")
-public class Product {
+public class Product implements Serializable{
+
+	private static final long serialVersionUID = -6987451687824498443L;
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,9 @@ public class Product {
 	
 	@Column(name = "time")
 	private String time;
+	
+	@Column(name = "category")
+	private String category;
 	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<ProductImages> images;
@@ -106,6 +112,12 @@ public class Product {
 	}
 	public void setPrice(List<ProductPriceSize> price) {
 		this.price = price;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
 	}
 	@Override
 	public int hashCode() {

@@ -1,8 +1,10 @@
 package com.dreamsjewelrystudio.controllers;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -42,11 +44,11 @@ import com.dreamsjewelrystudio.utils.Util;
 @RequestMapping("/admin")
 public class AdminPanelController {
 
-	@Autowired private PasswordEncoder passwordEncoder;
+	@Autowired private PasswordEncoder pswdencdr;
 	@Autowired private AdminsService adminSrvc;
-	@Autowired private ProductServiceImpl productService;
-	@Autowired private ProductPriceSizeService productPriceSizeService;
-	@Autowired private ProductImagesService productImagesService;
+	@Autowired private ProductServiceImpl prdSrvc;
+	@Autowired private ProductPriceSizeService prsSrvc;
+	@Autowired private ProductImagesService pimgSrvc;
 	@Autowired private MessagesServiceImpl msgSrvc;
 	@Autowired private ItemServiceImpl itemService;
 	@Autowired private SessionServiceImpl sessSrvc;
@@ -69,6 +71,8 @@ public class AdminPanelController {
 			Model model){
 		if(!isAdmin(session)) return "forward:/admin/alogin";
 		
+		if(!operation.equals("INSERT") || !table.equals("product")) return "adminpanel";
+		
 		model.addAttribute("operation", operation);
 		model.addAttribute("table", table);
 		return "entry";
@@ -77,6 +81,22 @@ public class AdminPanelController {
 	@PostMapping("/modify")
 	@ResponseBody
 	public String insert(@RequestBody Product product) {
+		List<ProductPriceSize> prs = product.getPrice();
+		List<ProductImages> pimg = product.getImages();
+		
+		String dateTime[] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()).split(" ");
+		product.setDate(dateTime[0]);
+		product.setTime(dateTime[1]);
+		product.setPrice(null);
+		product.setImages(null);
+		Product newProduct = prdSrvc.persistProduct(product);
+		
+		for(ProductPriceSize price : prs) price.setProduct_id(newProduct.getProduct_id());
+		for(ProductImages img : pimg) img.setProduct_id(newProduct.getProduct_id());
+		
+		prsSrvc.persistsAll(prs);
+		pimgSrvc.persistAll(pimg);
+		
 		return "SUCCESS";
 	}
 	
@@ -117,11 +137,11 @@ public class AdminPanelController {
 		
 		Admins admin = adminSrvc.findAdminByName(name);
 		
-		if(Objects.nonNull(admin) && passwordEncoder.matches(pass, admin.getPass())) { 
+		if(Objects.nonNull(admin) && pswdencdr.matches(pass, admin.getPass())) { 
 			String uuid = UUID.randomUUID().toString();
 			Cookie newCookie = new Cookie(Util.ADMIN, uuid);
 	        
-	        if(!notOwnPC) newCookie.setMaxAge(60 * 60 * 2);
+	        if(notOwnPC) newCookie.setMaxAge(60 * 60 * 2);
 			else newCookie.setMaxAge(60 * 60 * 24 * 365 * 10);
 	        
 	        response.addCookie(newCookie);
@@ -176,13 +196,13 @@ public class AdminPanelController {
 				getFieldValues(items, msgSrvc.findAll(), getFieldNames(fields, Messages.class.getDeclaredFields()));
 				break;
 			case "product_images":
-				getFieldValues(items, productImagesService.findAll(), getFieldNames(fields, ProductImages.class.getDeclaredFields()));
+				getFieldValues(items, pimgSrvc.findAll(), getFieldNames(fields, ProductImages.class.getDeclaredFields()));
 				break;
 			case "product_price_size":
-				getFieldValues(items, productPriceSizeService.findAll(), getFieldNames(fields, ProductPriceSize.class.getDeclaredFields()));
+				getFieldValues(items, prsSrvc.findAll(), getFieldNames(fields, ProductPriceSize.class.getDeclaredFields()));
 				break;
 			case "product":
-				getFieldValues(items, productService.findAllWithChildren(), getFieldNames(fields, Product.class.getDeclaredFields()));
+				getFieldValues(items, prdSrvc.findAllWithChildren(), getFieldNames(fields, Product.class.getDeclaredFields()));
 				break;
 			case "session":
 				getFieldValues(items, sessSrvc.findAll(), getFieldNames(fields, Session.class.getDeclaredFields()));

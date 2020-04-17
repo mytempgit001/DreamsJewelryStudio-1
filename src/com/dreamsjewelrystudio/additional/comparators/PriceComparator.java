@@ -29,11 +29,14 @@ public class PriceComparator implements Comparator<Product>{
 
 		@Override
 		public int compare(ProductPriceSize o1, ProductPriceSize o2) {
-			if(o1.getDiscountAvailability() && !o2.getDiscountAvailability()) 
+			boolean o1DiscountPrice = o1.getDiscountPrice()!=null && o1.getDiscountPrice()>0;
+			boolean o2DiscountPrice = o2.getDiscountPrice()!=null && o2.getDiscountPrice()>0;
+			
+			if(o1DiscountPrice && !o2DiscountPrice) 
 				return o1.getDiscountPrice().compareTo(o2.getPrice());
-			else if(!o1.getDiscountAvailability() && o2.getDiscountAvailability()) 
+			else if(!o1DiscountPrice && o2DiscountPrice) 
 				return o1.getPrice().compareTo(o2.getDiscountPrice());
-			else if(!o1.getDiscountAvailability() && !o2.getDiscountAvailability())
+			else if(!o1DiscountPrice && !o2DiscountPrice)
 				return o1.getPrice().compareTo(o2.getPrice());
 			else return o1.getDiscountPrice().compareTo(o2.getDiscountPrice());
 		}

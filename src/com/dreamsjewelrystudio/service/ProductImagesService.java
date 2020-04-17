@@ -12,9 +12,17 @@ import com.dreamsjewelrystudio.repository.ProductImagesRepository;
 public class ProductImagesService {
 	
 	@Autowired
-	private ProductImagesRepository prodImagesRepo;
+	private ProductImagesRepository pimgRepo;
 	
 	public List<ProductImages> findAll(){
-		return prodImagesRepo.findAll();
+		return pimgRepo.findAll();
+	}
+	
+	public ProductImages persistImg(ProductImages img) {
+		return pimgRepo.saveAndFlush(img);
+	}
+	
+	public List<ProductImages> persistAll(List<ProductImages> img) {
+		return pimgRepo.saveAll(img);
 	}
 }

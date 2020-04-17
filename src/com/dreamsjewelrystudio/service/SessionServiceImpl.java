@@ -12,17 +12,17 @@ import com.dreamsjewelrystudio.repository.SessionRepository;
 public class SessionServiceImpl {
 	
 	@Autowired
-	private SessionRepository sessRepo;
+	private SessionRepository sessRepository;
 	
 	public Session findSessionByToken(String token) {
-		return sessRepo.getSessionByToken(token);
+		return sessRepository.getSessionByToken(token);
 	}
 	
 	public Session createNewSession(Session session) {
-		return sessRepo.saveAndFlush(session);
+		return sessRepository.saveAndFlush(session);
 	}
 	
 	public List<Session> findAll(){
-		return sessRepo.findAll();
+		return sessRepository.findAll();
 	}
 }

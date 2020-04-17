@@ -36,7 +36,7 @@ public class Item {
 	private float price;
 	
 	@Column(name = "priceperone")
-	private float priceperone;
+	private Float priceperone;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sessID", insertable = false, updatable = false)
@@ -46,7 +46,7 @@ public class Item {
     @JoinColumn(name = "productID", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
 	
-	public float getPricePerOne() {
+	public Float getPricePerOne() {
 		return priceperone;
 	}
 	public void setPricePerOne(float priceperone) {

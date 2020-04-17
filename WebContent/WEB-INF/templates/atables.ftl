@@ -21,8 +21,8 @@
                </button>
                <div class="dropdown-menu animated--fade-in" aria-labelledby="dropdownMenuButton">
                  <a class="dropdown-item" href="http://localhost:8080/admin/modifying?table=${tableName}&operation=INSERT">INSERT</a>
-                 <a class="dropdown-item" href="#">UPDATE</a>
-                 <a class="dropdown-item" href="#">DELETE</a>
+                 <a class="dropdown-item" href="http://localhost:8080/admin/modifying?table=${tableName}&operation=UPDATE">UPDATE</a>
+                 <a class="dropdown-item" href="http://localhost:8080/admin/modifying?table=${tableName}&operation=DELETE">DELETE</a>
                </div>
                entries.
              </div>

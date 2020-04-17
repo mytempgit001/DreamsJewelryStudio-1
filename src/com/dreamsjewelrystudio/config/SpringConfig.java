@@ -61,7 +61,7 @@ public class SpringConfig {
 	public Properties additionalProperties() {
         final Properties hibernateProperties = new Properties();
 //        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-//        hibernateProperties.put("hibernate.show_sql", true);
+        hibernateProperties.put("hibernate.show_sql", true);
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
         hibernateProperties.setProperty("hibernate.cache.use_query_cache", "false");
