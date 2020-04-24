@@ -10,8 +10,8 @@
                 <h1 class="page-header">${product.name}
                 </h1>
                 <ol class="breadcrumb">
-                    <li><a href="/">Home</a>
-                    </li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/catalog">Catalog</a></li>
                     <li class="active">Listing</li>
                 </ol>
             </div>
@@ -26,9 +26,9 @@
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
                         <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
-                        <#list product.images[0].url?split(" | ") as splitValue1>
-	                        <#if splitValue??>
-	                        	<li data-target='#carousel-example-generic' data-slide-to='${splitValue1?index}'></li>
+                        <#list product.images as image>
+	                        <#if image.url??>
+	                        	<li data-target='#carousel-example-generic' data-slide-to='${image?index}'></li>
 	                        <#else>
 	                        	<li data-target='#carousel-example-generic' data-slide-to='0'></li>
 	                        </#if>
@@ -42,10 +42,10 @@
                         <div class="item active">
                         	<img class="img-responsive" src="${product.main_img}" width="750" height="500" alt="">
                         </div>
-                        <#list product.images[0].url?split(" | ") as splitValue>
+                        <#list product.images as image>
                         	<div class="item">
-	                        	<#if splitValue??>
-	                        		<img class="img-responsive" src="${splitValue}" width="750" height="500" alt="">
+	                        	<#if image??>
+	                        		<img class="img-responsive" src="${image.url}" width="750" height="500" alt="">
 	                        		<#else>
 	                        		<img class="img-responsive" src="${product.images[0].url}" width="750" height="500" alt="">
                         		</#if>

@@ -14,4 +14,7 @@ public interface ProductPriceSizeRepository extends JpaRepository<ProductPriceSi
 	
 	@Query(value = "SELECT * FROM product_price_size p WHERE p.size = ?1", nativeQuery = true)
 	List<ProductPriceSize> findProductPriceSizeBySize(String size);
+	
+	@Query(value = "SELECT * FROM product_price_size p WHERE p.size = ?1 AND p.product_id = ?2", nativeQuery = true)
+	ProductPriceSize findPrsBySizeAndProdId(String size, long id);
 }

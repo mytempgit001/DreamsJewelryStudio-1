@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -32,8 +33,8 @@ import com.dreamsjewelrystudio.additional.PayPalIntegrator;
 @PropertySource("classpath:/com/dreamsjewelrystudio/app.properties")
 public class SpringConfig {
 	
-	@Autowired
-	private Environment env;
+	@Autowired private Environment env;
+	@Autowired private DataSource ds;
 	
 	@Bean
 	public DataSource getDataSource() {
@@ -62,6 +63,7 @@ public class SpringConfig {
         final Properties hibernateProperties = new Properties();
 //        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         hibernateProperties.put("hibernate.show_sql", true);
+        hibernateProperties.put("hibernate.format_sql", true);
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
         hibernateProperties.setProperty("hibernate.cache.use_query_cache", "false");
@@ -78,6 +80,11 @@ public class SpringConfig {
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
+    }
+    
+    @Bean
+    public JdbcTemplate initJdbcTemplate() {
+    	return new JdbcTemplate(ds);
     }
     
     @Bean(name="pagination")

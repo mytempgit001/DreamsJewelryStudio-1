@@ -27,28 +27,25 @@ import com.dreamsjewelrystudio.models.Item;
 import com.dreamsjewelrystudio.models.Product;
 import com.dreamsjewelrystudio.models.ProductPriceSize;
 import com.dreamsjewelrystudio.models.Session;
-import com.dreamsjewelrystudio.service.ItemServiceImpl;
-import com.dreamsjewelrystudio.service.ProductServiceImpl;
-import com.dreamsjewelrystudio.service.SessionServiceImpl;
+import com.dreamsjewelrystudio.service.ItemService;
+import com.dreamsjewelrystudio.service.ProductPriceSizeService;
+import com.dreamsjewelrystudio.service.ProductService;
+import com.dreamsjewelrystudio.service.SessionService;
 import com.dreamsjewelrystudio.utils.Util;
 
 @Controller
 public class CatalogController {
 	
-	@Autowired
-	private ProductServiceImpl productService;
-	
-	@Autowired
-	private SessionServiceImpl sessionService;
-	
-	@Autowired
-	private ItemServiceImpl itemService;
+	@Autowired private ProductService prdSrvc;
+	@Autowired private ProductPriceSizeService prsSrvc;
+	@Autowired private SessionService sessSrvc;
+	@Autowired private ItemService itmSrvc;
 	
 	@Autowired
 	@Qualifier("pagination")
 	private Pagination pagination;
 	
-	private String abstractMethod(Model model, Integer numPage, String filterBy, String sortBy) {
+	private String processCatalogPage(Model model, Integer numPage, String filterBy, String sortBy) {
 		
 		model.addAttribute("pagesAmount", pagination.getPagesAmount());
 		int[] range = pagination.calculateRange(numPage);
@@ -60,17 +57,18 @@ public class CatalogController {
 		
 		List<Product> products;
 		if(filterBy!=null) 
-			products = productService.getAllProdcutsByType(filterBy, range[0], range[1]);
+			products = prdSrvc.getProdcutsWithPriceByTypeOrCategoryLimit(filterBy, range[0], range[1]);
 		else
-			products = productService.getAllProductsWithChildrenLimit(range[0], range[1]);
+			products = prdSrvc.getProductsWithPriceLimit(range[0], range[1]);
 		
-		if(sortBy!=null) 
+		if(sortBy!=null) { 
 			switch(sortBy) {
-			case "By date: Old to new": products.sort(new DateComparator(false)); break;
-			case "By date: New to old": products.sort(new DateComparator(true)); break;
-			case "By price: Low to high": products.sort(new PriceComparator(false)); break;
-			case "By price: High to low": products.sort(new PriceComparator(true)); break;
+				case "By date: Old to new": products.sort(new DateComparator(false)); break;
+				case "By date: New to old": products.sort(new DateComparator(true)); break;
+				case "By price: Low to high": products.sort(new PriceComparator(false)); break;
+				case "By price: High to low": products.sort(new PriceComparator(true)); break;
 			}
+		}
 		
 		model.addAttribute("sorts", getSorts(sortBy));
 		model.addAttribute("filters", getFilters(filterBy));
@@ -141,83 +139,61 @@ public class CatalogController {
 	}
 	
 	@GetMapping("/catalog")
-	public String getCatalogPage(@RequestParam(name="page", required=false, defaultValue ="1") Integer numPage,
+	public String catalog(@RequestParam(name="page", required=false, defaultValue ="1") Integer numPage,
 			@RequestParam(name="filter", required=false) String filterBy,
 			@RequestParam(name="sort", required=false) String sortBy,
 			Model model) {
-		return abstractMethod(model, numPage, filterBy, sortBy);
+		return processCatalogPage(model, numPage, filterBy, sortBy);
 	}
 	
 	
 	@GetMapping("/listing")
-	public String getListingPage(@RequestParam(name="product_id", required = false) Long productID, Model model) {
-		try {
-			if(productID!=null) {
-				Product product = productService.getProductByID(productID, true, true);
-				if(product!=null) {
-					model.addAttribute("product", product);
-					return "listing";
-				}
+	public String listing(@RequestParam(name="product_id", required = false) Long productID, Model model) {
+		if(productID!=null) {
+			Product product = prdSrvc.getProductWithChildrenByID(productID);
+			if(product!=null) {
+				model.addAttribute("product", product);
+				return "listing";
 			}
-			model.addAttribute("message", "The product wasn't found.");
-			return "404";
-		}catch(Exception e) {
-			e.printStackTrace();
-			return "404";
 		}
+		model.addAttribute("message", "The product wasn't found.");
+		return "404";
 	}
 	
 	@PostMapping("/addToCart")
 	@ResponseBody
-	public String getProductPortfolio(
+	public String cart(
 			@RequestParam(name="id", required = false) Long productID,
 			@RequestParam(name="quantity", required = false, defaultValue = "1") Integer quantity,
 			@RequestParam(name="size", required = false, defaultValue = "noSize") String size,
 			HttpServletRequest request, HttpServletResponse response,
 			Model model) {
 		try {
-			Product product = productService.getProductByID(productID, true, true);
-			if(Objects.isNull(product))
-				return "DENIAL OF SERVICE (no product was found)";
-			
 			Cookie sessionCookie = Util.getSessionID(request.getCookies());
 			Session currentSession;
 			Item item;
-			if (!Objects.isNull(sessionCookie)) { // если есть сессия
+			if (Objects.nonNull(sessionCookie)) { // если есть сессия
 				String sessIDValue = sessionCookie.getValue();
-				currentSession = sessionService.findSessionByToken(sessIDValue);
+				currentSession = sessSrvc.findSessionItemProductByToken1(sessIDValue);
 				if(Objects.isNull(currentSession))
 					return "DENIAL OF SERVICE (no session was found)";
 				
-				List<Item> itemsList = itemService.getItemWithSession(currentSession);
+				List<Item> itemsList = currentSession.getItems();
 				item = itemsList.stream()
-						.filter(i -> i.getProduct().equals(product) && i.getSize().equals(size))
+						.filter(i -> i.getProduct().getProduct_id() == productID && i.getSize().equals(size))
 						.findFirst()
 						.orElse(null);
 				if(!Objects.isNull(item)) { // если есть тот же продукт в корзине
-					quantity = item.getQuantity() + quantity; // увеличиваем количество и стоимость
-					processProductPriceSize(item, product, size, quantity, product.getPrice());
+					processProductPriceSize(item, size, quantity, item.getPrs());
 				}else { // если есть сессия, но в корзине нет этого продукта
-					item = createNewItem(product, size, quantity, currentSession.getSessID());
+					item = createNewItem(productID, size, quantity, currentSession.getSessID());
 				}
 			}else { // если сессии нет
-				String uuid = UUID.randomUUID().toString();
-				int firstSessIDCookieTime = 129600;
-				
-				Cookie newCookie = new Cookie(Util.SESSID, uuid);
-		        newCookie.setMaxAge(firstSessIDCookieTime);
-		        response.addCookie(newCookie);
-		        
-		        currentSession = new Session();
-		        currentSession.setToken(uuid);
-		        currentSession.setLastUsed(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-		        currentSession = sessionService.createNewSession(currentSession);
-		        item = createNewItem(product, size, quantity, currentSession.getSessID());
-		        if(Objects.isNull(item.getSize()))
-		        	return "DENIAL OF SERVICE";
+				currentSession = sessSrvc.createNewSessionWithItems(assignSession(response));
+		        item = createNewItem(productID, size, quantity, currentSession.getSessID());
 			}
 			
-			itemService.persistItem(item);
+			itmSrvc.persistItem(item);
 			
 			return "SUCCESS";
 		}catch(Exception e) {
@@ -226,35 +202,41 @@ public class CatalogController {
 		}
 	}
 	
-	public Item createNewItem(Product product, String size, Integer quantity, long sessID) {
-		Item item = new Item();
-		item.setSessID(sessID);
-		item.setProductID(product.getProduct_id());
-        List<ProductPriceSize> priceSize = product.getPrice();
-        processProductPriceSize(item, product, size, quantity, priceSize);
-        return item;
+	private Session assignSession(HttpServletResponse response) {
+		String uuid = UUID.randomUUID().toString();
+		int firstSessIDCookieTime = 129600;
+		
+		Cookie newCookie = new Cookie(Util.SESSID, uuid);
+        newCookie.setMaxAge(firstSessIDCookieTime);
+        response.addCookie(newCookie);
+        
+        Session currentSession = new Session();
+        currentSession.setToken(uuid);
+        currentSession.setLastUsed(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        return currentSession;
 	}
 	
-	public void processProductPriceSize(Item item, Product product, String size, Integer quantity, List<ProductPriceSize> priceSize) {
-		for(ProductPriceSize p : priceSize) {
-        	if(p.getSize().equals(size)) {
-        		item.setSize(size);
-        		if(p.getQuantity() >= quantity)
-        			item.setQuantity(quantity);
-        		else
-        			item.setQuantity(p.getQuantity());
-        		
-        		float f1 = item.getQuantity(); 
-        		float f2 = 0f;
-        		if(p.getDiscountPrice() != null & p.getDiscountPrice()>0) 
-        			f2 = p.getDiscountPrice();
-        		else 
-        			f2 = p.getPrice();
-        		
-        		item.setPricePerOne(f2);
-        		item.setPrice(f1 * f2);
-        		break;
-        	}
-        }
+	private Item createNewItem(Long productID, String size, Integer quantity, long sessID) {
+		Item item = new Item();
+		item.setSessID(sessID);
+		item.setProductID(productID);
+		ProductPriceSize prs = prsSrvc.getPrsBySizeAndProductId(size, productID);
+		processProductPriceSize(item, size, quantity, prs);
+		return item;
+	}
+	
+	private void processProductPriceSize(Item item, String size, Integer quantity, ProductPriceSize prs) {
+		if(prs!=null) {
+			item.setPrice_id(prs.getPrice_id());
+			item.setSize(size);
+			if(prs.getQuantity() >= quantity) item.setQuantity(quantity);
+			else item.setQuantity(prs.getQuantity());
+			float f1 = item.getQuantity(); 
+			float f2 = 0f;
+			if(prs.getDiscountPrice() != null
+			&& prs.getDiscountPrice()>0) f2 = prs.getDiscountPrice();
+			else f2 = prs.getPrice();
+			item.setPrice(f1 * f2);
+		}
 	}
 }

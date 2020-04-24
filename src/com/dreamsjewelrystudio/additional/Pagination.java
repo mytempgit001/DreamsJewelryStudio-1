@@ -2,7 +2,7 @@ package com.dreamsjewelrystudio.additional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dreamsjewelrystudio.service.ProductServiceImpl;
+import com.dreamsjewelrystudio.service.ProductService;
 
 public class Pagination {
 	
@@ -13,7 +13,7 @@ public class Pagination {
 	private int[] productsRange;
 	
 	@Autowired
-	private ProductServiceImpl productJpa;
+	private ProductService productJpa;
 	
 	public Pagination() {}
 	
@@ -47,7 +47,7 @@ public class Pagination {
 
 	public int getPagesAmount() {
 		if(productsAmount == -1)
-			productsAmount = productJpa.selectCountProduct();
+			productsAmount = (int) productJpa.selectCountProduct();
 		
 		int temp = productsAmount/productsAmountToBeRenderedOnPage;
 		if(productsAmount%productsAmountToBeRenderedOnPage > 0) temp++;

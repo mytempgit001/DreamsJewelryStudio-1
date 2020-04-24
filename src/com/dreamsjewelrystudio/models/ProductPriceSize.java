@@ -1,7 +1,5 @@
 package com.dreamsjewelrystudio.models;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,8 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "product_price_size")
-public class ProductPriceSize implements Comparable<ProductPriceSize>, Serializable{
-	private static final long serialVersionUID = 1147350579884562465L;
+public class ProductPriceSize implements Comparable<ProductPriceSize>{
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +31,7 @@ public class ProductPriceSize implements Comparable<ProductPriceSize>, Serializa
 	@Column(name="discount_price")
 	private Float discountPrice;
 	
-	@Column(name="quantity")
+	@Column(name="max")
 	private Integer quantity;
 
 	@ManyToOne(fetch = FetchType.LAZY)

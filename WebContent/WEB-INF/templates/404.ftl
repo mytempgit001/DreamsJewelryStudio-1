@@ -1,6 +1,6 @@
-<#import "parts/header.ftl" as c>
-<#import "parts/footer.ftl" as d>
-<@c.page>
+<#import "parts/header.ftl" as header>
+<#import "parts/footer.ftl" as footer>
+<@header.page>
     <!-- Page Content -->
     <div class="container">
 
@@ -23,10 +23,9 @@
 
             <div class="col-lg-12">
                 <div class="jumbotron">
-                    <h1><span class="error-404">404</span>
+                    <h1 align="center"><span class="error-404">404</span>
                     </h1>
                     <p>
-                    <#if message??>${message} <#/if>
                     The page you're looking for could not be found. Here are some helpful links to get you back on track:</p>
                     <ul>
                         <li>
@@ -49,8 +48,8 @@
 
         <hr>
 
-      <@d.page>
-		 </@d.page>
+      <@footer.page>
+		 </@footer.page>
 
     </div>
     <!-- /.container -->
@@ -60,7 +59,6 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
-</@c.page>
 </body>
-
+</@header.page>
 </html>

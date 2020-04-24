@@ -32,12 +32,12 @@ import com.dreamsjewelrystudio.models.ProductImages;
 import com.dreamsjewelrystudio.models.ProductPriceSize;
 import com.dreamsjewelrystudio.models.Session;
 import com.dreamsjewelrystudio.service.AdminsService;
-import com.dreamsjewelrystudio.service.ItemServiceImpl;
-import com.dreamsjewelrystudio.service.MessagesServiceImpl;
+import com.dreamsjewelrystudio.service.ItemService;
+import com.dreamsjewelrystudio.service.MessagesService;
 import com.dreamsjewelrystudio.service.ProductImagesService;
 import com.dreamsjewelrystudio.service.ProductPriceSizeService;
-import com.dreamsjewelrystudio.service.ProductServiceImpl;
-import com.dreamsjewelrystudio.service.SessionServiceImpl;
+import com.dreamsjewelrystudio.service.ProductService;
+import com.dreamsjewelrystudio.service.SessionService;
 import com.dreamsjewelrystudio.utils.Util;
 
 @Controller
@@ -46,12 +46,12 @@ public class AdminPanelController {
 
 	@Autowired private PasswordEncoder pswdencdr;
 	@Autowired private AdminsService adminSrvc;
-	@Autowired private ProductServiceImpl prdSrvc;
+	@Autowired private ProductService prdSrvc;
 	@Autowired private ProductPriceSizeService prsSrvc;
 	@Autowired private ProductImagesService pimgSrvc;
-	@Autowired private MessagesServiceImpl msgSrvc;
-	@Autowired private ItemServiceImpl itemService;
-	@Autowired private SessionServiceImpl sessSrvc;
+	@Autowired private MessagesService msgSrvc;
+	@Autowired private ItemService itemService;
+	@Autowired private SessionService sessSrvc;
 	
 	@GetMapping
 	public String admin(@CookieValue(name=Util.ADMIN, defaultValue="") String session) {
@@ -81,21 +81,21 @@ public class AdminPanelController {
 	@PostMapping("/modify")
 	@ResponseBody
 	public String insert(@RequestBody Product product) {
-		List<ProductPriceSize> prs = product.getPrice();
 		List<ProductImages> pimg = product.getImages();
+		List<ProductPriceSize> prs = product.getPrice();
 		
 		String dateTime[] = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()).split(" ");
 		product.setDate(dateTime[0]);
 		product.setTime(dateTime[1]);
 		product.setPrice(null);
 		product.setImages(null);
-		Product newProduct = prdSrvc.persistProduct(product);
 		
-		for(ProductPriceSize price : prs) price.setProduct_id(newProduct.getProduct_id());
-		for(ProductImages img : pimg) img.setProduct_id(newProduct.getProduct_id());
+		Product prd = prdSrvc.persistProduct(product);
+		pimg.parallelStream().forEach(i -> i.setProduct_id(prd.getProduct_id()));
+		prs.parallelStream().forEach(i -> i.setProduct_id(prd.getProduct_id()));
 		
-		prsSrvc.persistsAll(prs);
 		pimgSrvc.persistAll(pimg);
+		prsSrvc.persistsAll(prs);
 		
 		return "SUCCESS";
 	}

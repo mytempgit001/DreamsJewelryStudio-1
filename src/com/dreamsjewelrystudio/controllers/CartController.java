@@ -14,28 +14,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dreamsjewelrystudio.models.Item;
 import com.dreamsjewelrystudio.models.Session;
-import com.dreamsjewelrystudio.service.ItemServiceImpl;
-import com.dreamsjewelrystudio.service.SessionServiceImpl;
+import com.dreamsjewelrystudio.service.ItemService;
+import com.dreamsjewelrystudio.service.SessionService;
 import com.dreamsjewelrystudio.utils.Util;
 
 @Controller
 public class CartController {
 	
 	@Autowired
-	private SessionServiceImpl sessionService;
+	private SessionService sessionService;
 	
 	@Autowired
-	private ItemServiceImpl itemService;
+	private ItemService itemService;
 
 	@GetMapping("/cart")
 	public String getPersonalCart(@CookieValue(name=Util.SESSID, defaultValue="") String sessionCookie, Model model) {
 		if(sessionCookie.length()>0) {
-			Session currentSession = sessionService.findSessionByToken(sessionCookie);
+			Session currentSession = sessionService.findSessionItemProductByToken(sessionCookie);
 			if(currentSession!=null) {
-				List<Item> items = itemService.getItemsAndProductWtihChildrenWithSessionId(currentSession.getSessID());
+				List<Item> items = currentSession.getItems();
 				float totalPrice = 0f;
 				for(int i = 0; i < items.size(); i++) { 
-					System.out.println(items.get(i).getPricePerOne());
 					totalPrice+=items.get(i).getPrice();
 				}
 				
@@ -65,7 +64,7 @@ public class CartController {
 		
 		Item item = itemService.findItemById(itemID);
 		item.setQuantity(qty);
-		item.setPrice(item.getPricePerOne() * qty);
+//		item.setPrice(item.getPricePerOne() * qty);
 		itemService.updateItem(item);
 		
 		return "SUCCESS";

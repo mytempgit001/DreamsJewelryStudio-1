@@ -1,58 +1,43 @@
 package com.dreamsjewelrystudio.models;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "product")
-public class Product implements Serializable{
-
-	private static final long serialVersionUID = -6987451687824498443L;
+@NamedEntityGraphs({
+	@NamedEntityGraph(name = "prd-pimg",attributeNodes = { @NamedAttributeNode("images") }),
+	@NamedEntityGraph(name = "prd-prs",attributeNodes = { @NamedAttributeNode("price") })
+})
+public class Product{
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
 	private Long product_id;
-	
-	@Column(name = "description")
 	private String description;
-	
-	@Column(name = "main_img")
 	private String main_img;
-	
-	@Column(name = "name")
 	private String name;
-	
-	@Column(name = "product_type")
 	private String product_type;
-	
-	@Column(name = "material")
 	private String material;
-	
-	@Column(name = "date")
 	private String date;
-	
-	@Column(name = "time")
 	private String time;
-	
-	@Column(name = "category")
 	private String category;
-	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<ProductImages> images;
-	
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<ProductPriceSize> price;
+	
 	public Long getProduct_id() {
 		return product_id;
 	}

@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dreamsjewelrystudio.models.Messages;
-import com.dreamsjewelrystudio.service.MessagesServiceImpl;
+import com.dreamsjewelrystudio.service.MessagesService;
 
 @Controller
 public class ContactController {
 	
 	@Autowired
-	private MessagesServiceImpl msgSrvc;
+	private MessagesService msgSrvc;
 	
 	@GetMapping("/contact")
 	public String getContactPage() {

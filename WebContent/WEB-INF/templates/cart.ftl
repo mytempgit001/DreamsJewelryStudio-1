@@ -87,6 +87,11 @@
 	  		<#if items??>
 				<#list items as item> 
 					<#assign product = item.getProduct()>
+					<#if item.getPrs().getDiscountPrice() == 0>
+						<#assign priceperone = item.getPrs().getPrice()>
+						<#else>
+						<#assign priceperone = item.getPrs().getDiscountPrice()>
+					</#if>
 		  			<div id="div${item?index}" class="item">
 		    			<div class="buttons">
 		      				<span id="span${item?index}" class="delete-btn"></span>
@@ -130,7 +135,7 @@
 			    				<script>
 			    					var selectWidget = document.getElementById("cd2_${item?index}");
 			    					selectWidget.addEventListener("change", function(){
-			    						var newPrice = parseFloat("${item.getPricePerOne()}".replace(",", ".")) * document.getElementById("cd2_${item?index}").value;
+			    						var newPrice = parseFloat("${priceperone}".replace(",", ".")) * document.getElementById("cd2_${item?index}").value;
 			    						document.getElementById("tp_${item?index}").innerText = "$ " + newPrice.toFixed(1).replace(".", ",");
 			    						changeAmount(${item.itemID}, document.getElementById("cd2_${item?index}").value);
 		    						});

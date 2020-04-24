@@ -25,4 +25,8 @@ public class ProductPriceSizeService {
 	public List<ProductPriceSize> persistsAll(List<ProductPriceSize> prs) {
 		return prsRepository.saveAll(prs);
 	}
+	
+	public ProductPriceSize getPrsBySizeAndProductId(String size, long id) {
+		return prsRepository.findPrsBySizeAndProdId(size, id);
+	}
 }

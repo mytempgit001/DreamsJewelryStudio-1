@@ -9,7 +9,7 @@ import com.dreamsjewelrystudio.models.Messages;
 import com.dreamsjewelrystudio.repository.MessagesRepository;
 
 @Service
-public class MessagesServiceImpl {
+public class MessagesService {
 	
 	@Autowired
 	private MessagesRepository msgRepo;

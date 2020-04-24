@@ -23,6 +23,9 @@ public class Item {
 	@Column(name = "productID")
 	private long productID;
 	
+	@Column(name = "price_id")
+	private long price_id;
+	
 	@Column(name = "sessID")
 	private long sessID;
 	
@@ -35,23 +38,18 @@ public class Item {
 	@Column(name = "price")
 	private float price;
 	
-	@Column(name = "priceperone")
-	private Float priceperone;
-	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sessID", insertable = false, updatable = false)
 	private Session session;
 	
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productID", referencedColumnName = "product_id", insertable = false, updatable = false)
 	private Product product;
 	
-	public Float getPricePerOne() {
-		return priceperone;
-	}
-	public void setPricePerOne(float priceperone) {
-		this.priceperone = priceperone;
-	}
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "price_id", referencedColumnName = "price_id", insertable = false, updatable = false)
+	private ProductPriceSize prs;
+	
 	public long getItemID() {
 		return itemID;
 	}
@@ -99,5 +97,17 @@ public class Item {
 	}
 	public void setSessID(long sessID) {
 		this.sessID = sessID;
+	}
+	public long getPrice_id() {
+		return price_id;
+	}
+	public void setPrice_id(long price_id) {
+		this.price_id = price_id;
+	}
+	public ProductPriceSize getPrs() {
+		return prs;
+	}
+	public void setPrs(ProductPriceSize prs) {
+		this.prs = prs;
 	}
 }
