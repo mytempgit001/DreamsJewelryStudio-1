@@ -144,7 +144,7 @@ function sendMessage(msgType, name, email, msg){
 
         </div>
         <!-- /.row -->
-
+	<hr>
 		<@footer.page>
 		</@footer.page>
     </div>

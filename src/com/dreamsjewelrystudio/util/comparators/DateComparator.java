@@ -1,4 +1,4 @@
-package com.dreamsjewelrystudio.additional.comparators;
+package com.dreamsjewelrystudio.util.comparators;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

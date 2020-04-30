@@ -9,6 +9,7 @@
 <!-- Bootstrap Core JavaScript -->
 <script src="static/js/bootstrap.min.js"></script>
 
+
 <script>
 	function deleteItem(temp, div, itemID){
 		temp.addEventListener("click", function(){
@@ -86,6 +87,7 @@
 	  		
 	  		<#if items??>
 				<#list items as item> 
+				<#if item.product??>
 					<#assign product = item.getProduct()>
 					<#if item.getPrs().getDiscountPrice() == 0>
 						<#assign priceperone = item.getPrs().getPrice()>
@@ -98,11 +100,12 @@
 		    			</div>
 		 
 	 					<script>
-							deleteItem(document.getElementById("span${item?index}"), document.getElementById("div${item?index}"), ${item.itemID});
+							deleteItem(document.getElementById("span${item?index}"), document.getElementById("div${item?index}"), ${item.itemID?c});
 						</script>
 		 
 		    			<div class="image" style="margin-right: 20px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); ">
-		      				<img id="${product.main_img}" src="${product.main_img}" style="box-shadow: 0 0 10px rgba(0,0,0,0.5);  display: block; margin-left: auto; margin-right: auto; margin-top: auto;  transform: translate(0%, -22%);" alt="" width="100%" />
+		      				<img id="${product.main_img}" src="${product.main_img}" style="box-shadow: 0 0 10px rgba(0,0,0,0.5);  max-width: 100%; max-height: 100%; width: 100%; height: 100%;  top: 0; bottom: 0;
+    								left: 0; right: 0; margin: auto; object-fit: cover;" />
 		    			</div>
 		 				
 		    			<div class="description" style="width:20%">
@@ -114,15 +117,7 @@
 		    			<div class="quantity">
 		    				<div class="main-div">
 			    				<select id="cd2_${item?index}" class="child-div2" style="text-align: center; width: 60px;" >
-		    						<#list item.product.price as x>
-		    							<#if x.size == item.size>
-		    								<#assign priceSize = x>
-	    									 <#break>
-    									 <#else>
-	    									 <#assign priceSize = item.product.price[0]>
-		    							</#if>
-		    						 </#list>
-		    						
+  									<#assign priceSize = item.prs>
 				    				<#list 1..priceSize.quantity as index>
 	               						<#if index==item.quantity>
 	               							<option selected value='${index}'>${index}</option>
@@ -137,17 +132,18 @@
 			    					selectWidget.addEventListener("change", function(){
 			    						var newPrice = parseFloat("${priceperone}".replace(",", ".")) * document.getElementById("cd2_${item?index}").value;
 			    						document.getElementById("tp_${item?index}").innerText = "$ " + newPrice.toFixed(1).replace(".", ",");
-			    						changeAmount(${item.itemID}, document.getElementById("cd2_${item?index}").value);
+			    						changeAmount(${item.itemID?c}, document.getElementById("cd2_${item?index}").value);
 		    						});
 			    				</script>
 		    				</div>
 		  				</div>
 		   		 		<div id="tp_${item?index}" class="total-price">$ ${item.price}</div>
 		  			</div>
+		  			</#if>
 		 		</#list>
 	 		</#if>
 	 		<div class="title" style="padding: 13px 30px;">
-	   		 	<button id="buybtn" class="buyBtn" style="float: right;">Purchase</button>
+	 			<button id="buybtn" type="submit" class="btn btn-primary" style="width:150px; float: right;">Purchase</button>
 	   		 	<script>
 	   		 		document.getElementById("buybtn").addEventListener("click", function(){
 	   		 		$.ajax({
@@ -170,6 +166,7 @@
 	   		 	</script>
 	  		</div>
 		</div>
+		<hr>
 		<@footer.page>
 		</@footer.page>
 	</div>

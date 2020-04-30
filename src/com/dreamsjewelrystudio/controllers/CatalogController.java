@@ -15,14 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.dreamsjewelrystudio.additional.Pagination;
-import com.dreamsjewelrystudio.additional.comparators.DateComparator;
-import com.dreamsjewelrystudio.additional.comparators.PriceComparator;
 import com.dreamsjewelrystudio.models.Item;
 import com.dreamsjewelrystudio.models.Product;
 import com.dreamsjewelrystudio.models.ProductPriceSize;
@@ -31,7 +29,10 @@ import com.dreamsjewelrystudio.service.ItemService;
 import com.dreamsjewelrystudio.service.ProductPriceSizeService;
 import com.dreamsjewelrystudio.service.ProductService;
 import com.dreamsjewelrystudio.service.SessionService;
-import com.dreamsjewelrystudio.utils.Util;
+import com.dreamsjewelrystudio.util.Pagination;
+import com.dreamsjewelrystudio.util.Util;
+import com.dreamsjewelrystudio.util.comparators.DateComparator;
+import com.dreamsjewelrystudio.util.comparators.PriceComparator;
 
 @Controller
 public class CatalogController {
@@ -57,9 +58,9 @@ public class CatalogController {
 		
 		List<Product> products;
 		if(filterBy!=null) 
-			products = prdSrvc.getProdcutsWithPriceByTypeOrCategoryLimit(filterBy, range[0], range[1]);
+			products = prdSrvc.findProdcutsWithPriceByTypeOrCategoryLimit(filterBy, range[0], range[1]);
 		else
-			products = prdSrvc.getProductsWithPriceLimit(range[0], range[1]);
+			products = prdSrvc.findProductsWithPriceLimit(range[0], range[1]);
 		
 		if(sortBy!=null) { 
 			switch(sortBy) {
@@ -150,7 +151,7 @@ public class CatalogController {
 	@GetMapping("/listing")
 	public String listing(@RequestParam(name="product_id", required = false) Long productID, Model model) {
 		if(productID!=null) {
-			Product product = prdSrvc.getProductWithChildrenByID(productID);
+			Product product = prdSrvc.findProductWithChildrenByID(productID);
 			if(product!=null) {
 				model.addAttribute("product", product);
 				return "listing";
@@ -174,19 +175,20 @@ public class CatalogController {
 			Item item;
 			if (Objects.nonNull(sessionCookie)) { // если есть сессия
 				String sessIDValue = sessionCookie.getValue();
-				currentSession = sessSrvc.findSessionItemProductByToken1(sessIDValue);
-				if(Objects.isNull(currentSession))
+				currentSession = sessSrvc.findSessionItemPrsByToken(sessIDValue);
+				if(Objects.nonNull(currentSession)) {
+					List<Item> itemsList = currentSession.getItems();
+					item = itemsList.stream()
+							.filter(i -> i.getPrs().getProduct_id() == productID && i.getSize().equals(size))
+							.findFirst()
+							.orElse(null);
+					if(!Objects.isNull(item)) { // если есть тот же продукт в корзине
+						processProductPriceSize(item, size, quantity, item.getPrs());
+					}else { // если есть сессия, но в корзине нет этого продукта
+						item = createNewItem(productID, size, quantity, currentSession.getSessID());
+					}
+				}else {
 					return "DENIAL OF SERVICE (no session was found)";
-				
-				List<Item> itemsList = currentSession.getItems();
-				item = itemsList.stream()
-						.filter(i -> i.getProduct().getProduct_id() == productID && i.getSize().equals(size))
-						.findFirst()
-						.orElse(null);
-				if(!Objects.isNull(item)) { // если есть тот же продукт в корзине
-					processProductPriceSize(item, size, quantity, item.getPrs());
-				}else { // если есть сессия, но в корзине нет этого продукта
-					item = createNewItem(productID, size, quantity, currentSession.getSessID());
 				}
 			}else { // если сессии нет
 				currentSession = sessSrvc.createNewSessionWithItems(assignSession(response));
@@ -238,5 +240,11 @@ public class CatalogController {
 			else f2 = prs.getPrice();
 			item.setPrice(f1 * f2);
 		}
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public String handleException(Exception e) {
+		e.printStackTrace();
+		return "404";
 	}
 }

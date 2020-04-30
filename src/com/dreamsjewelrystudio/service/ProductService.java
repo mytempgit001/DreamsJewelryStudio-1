@@ -43,7 +43,7 @@ public class ProductService{
 		return products;
 	}
 	
-	public List<Product> getProductsWithPriceLimit(int from, int limit){
+	public List<Product> findProductsWithPriceLimit(int from, int limit){
 		EntityManager em = emf.createEntityManager();
 		List<Product> list = em.createQuery("SELECT p FROM Product p", Product.class)
 				.setFirstResult(from)
@@ -54,7 +54,7 @@ public class ProductService{
 		return list;
 	}
 	
-	public List<Product> getProdcutsWithPriceByTypeOrCategoryLimit(String arg, int from, int limit){
+	public List<Product> findProdcutsWithPriceByTypeOrCategoryLimit(String arg, int from, int limit){
 		String attribute = "category";
 		if(arg.toLowerCase().contains("resin") || arg.toLowerCase().contains("gemstone")) 
 			attribute = "product_type";
@@ -72,7 +72,7 @@ public class ProductService{
 		return list;
 	}
 	
-	public Product getProductWithChildrenByID(long id) {
+	public Product findProductWithChildrenByID(long id) {
 		EntityManager em = emf.createEntityManager();
 		Product product = em.createQuery("SELECT distinct p "
 						+ "FROM Product p "
@@ -90,5 +90,25 @@ public class ProductService{
 		
 		em.close();
 		return product;
+	}
+	
+	public List<Product> findProductsWithChildrenInRange(List<Product> prds) {
+		EntityManager em = emf.createEntityManager();
+		prds = em.createQuery("SELECT distinct p "
+						+ "FROM Product p "
+						+ "WHERE p in :prds", Product.class)
+				.setParameter("prds", prds)
+				.setHint("javax.persistence.fetchgraph", em.createEntityGraph("prd-prs"))
+				.getResultList();
+		prds  = em.createQuery("SELECT distinct p "
+						+ "FROM Product p "
+						+ "WHERE p in :products", Product.class)
+				.setParameter("products", prds)
+				.setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
+				.setHint("javax.persistence.fetchgraph", em.createEntityGraph("prd-pimg"))
+				.getResultList();
+		
+		em.close();
+		return prds;
 	}
 } 

@@ -11,12 +11,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "session")
-@NamedEntityGraph(name = "session-items", attributeNodes = @NamedAttributeNode(value = "items"))
+@NamedEntityGraphs(value = { 
+		@NamedEntityGraph(name = "sess-itms-prs", attributeNodes = @NamedAttributeNode(value = "items", subgraph  = "itm-prs"),
+				subgraphs =  @NamedSubgraph(name = "itm-prs", attributeNodes = @NamedAttributeNode("prs"))),
+		@NamedEntityGraph(name = "sess-itms-prd", attributeNodes = @NamedAttributeNode(value = "items", subgraph  = "itm-prd"),
+				subgraphs =  @NamedSubgraph(name = "itm-prd", attributeNodes = @NamedAttributeNode("product")))
+}) 
 public class Session {
 
 	@Id

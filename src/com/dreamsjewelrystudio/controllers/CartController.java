@@ -16,23 +16,21 @@ import com.dreamsjewelrystudio.models.Item;
 import com.dreamsjewelrystudio.models.Session;
 import com.dreamsjewelrystudio.service.ItemService;
 import com.dreamsjewelrystudio.service.SessionService;
-import com.dreamsjewelrystudio.utils.Util;
+import com.dreamsjewelrystudio.util.Util;
 
 @Controller
 public class CartController {
 	
-	@Autowired
-	private SessionService sessionService;
-	
-	@Autowired
-	private ItemService itemService;
+	@Autowired private SessionService sessSrvc;
+	@Autowired private ItemService itmSrvc;
 
 	@GetMapping("/cart")
 	public String getPersonalCart(@CookieValue(name=Util.SESSID, defaultValue="") String sessionCookie, Model model) {
 		if(sessionCookie.length()>0) {
-			Session currentSession = sessionService.findSessionItemProductByToken(sessionCookie);
+			Session currentSession = sessSrvc.findSessionItemPrsPrdByToken(sessionCookie);
 			if(currentSession!=null) {
 				List<Item> items = currentSession.getItems();
+				
 				float totalPrice = 0f;
 				for(int i = 0; i < items.size(); i++) { 
 					totalPrice+=items.get(i).getPrice();
@@ -49,11 +47,8 @@ public class CartController {
 	@ResponseBody
 	public String deleteItem(@CookieValue(name=Util.SESSID, defaultValue="") String sessionCookie,
 			@RequestParam(name="itemID", defaultValue="") Long itemID) throws Exception {
-		if(sessionCookie.length()>0) {
-			itemService.removeItem(itemID);
-			return "SUCCESS";
-		}
-		throw new Exception();
+		sessSrvc.deleteItemBySession(sessionCookie, itemID);
+		return "SUCCESS";
 	}
 	
 	@PostMapping("/changeAmount")
@@ -61,19 +56,17 @@ public class CartController {
 	public String changeAmount(
 			@RequestParam(name="itemID", required = true) Long itemID,
 			@RequestParam(name="qty", required = true) Integer qty) throws Exception {
-		
-		Item item = itemService.findItemById(itemID);
-		item.setQuantity(qty);
-//		item.setPrice(item.getPricePerOne() * qty);
-		itemService.updateItem(item);
-		
+		Item item = itmSrvc.findItemWithPrsById(itemID);
+		if(item.getPrs().getDiscountPrice()!=null && item.getPrs().getDiscountPrice() > 0)
+			itmSrvc.updateItemQuantity(qty, item.getPrs().getDiscountPrice()*qty, itemID);
+		else
+			itmSrvc.updateItemQuantity(qty, item.getPrs().getPrice()*qty, itemID);
 		return "SUCCESS";
 	}
 	
 	@ExceptionHandler(Exception.class)
-	@ResponseBody
 	public String handleException(Exception e) {
 		e.printStackTrace();
-		return "ERROR";
+		return "404";
 	}
 }

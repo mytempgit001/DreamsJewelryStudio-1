@@ -1,4 +1,4 @@
-package com.dreamsjewelrystudio.additional.comparators;
+package com.dreamsjewelrystudio.util.comparators;
 
 import java.util.Comparator;
 

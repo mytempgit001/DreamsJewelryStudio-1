@@ -1,4 +1,4 @@
-package com.dreamsjewelrystudio.additional;
+package com.dreamsjewelrystudio.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

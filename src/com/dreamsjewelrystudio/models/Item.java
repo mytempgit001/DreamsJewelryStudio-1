@@ -8,13 +8,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "item")
+@NamedEntityGraphs(value = { 
+		@NamedEntityGraph(name = "itm-prd", attributeNodes = @NamedAttributeNode(value = "product")),
+		@NamedEntityGraph(name = "itm-prs", attributeNodes = @NamedAttributeNode(value = "prs"))
+})
 public class Item {
-	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "itemID")

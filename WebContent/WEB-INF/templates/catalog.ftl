@@ -1,7 +1,14 @@
 <#import "parts/header.ftl" as c>
 <#import "parts/footer.ftl" as d>
 <#import "parts/pager.ftl" as p>
+
 <@c.page>
+
+<!-- jQuery -->
+    <script src="static/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="static/js/bootstrap.min.js"></script>
 
     <!-- Page Content -->
     <div id="content" class="container">
@@ -37,11 +44,15 @@
         <div class="row">
         	<#list products as product>
 	            <div class="col-md-4 img-portfolio" >
-	                <a href="/listing?product_id=${product.product_id}" id="img + ${product?index}" >
-	                    <img class="img-responsive img-hover" src="${product.main_img}" style="box-shadow: 0 0 10px rgba(0,0,0,0.5);" alt="" width:"700" height:"300">
-	                </a>
+					<div style="overflow: hidden; height: 240px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+		                <a href="/listing?product_id=${product.product_id}" id="img + ${product?index}" >
+		                    <img style="max-width: 100%; max-height: 100%; width: 100%; height: 100%;  top: 0; bottom: 0;
+    								left: 0; right: 0; margin: auto; object-fit: cover;" 
+    								class="img-responsive img-hover" src="${product.main_img}"  alt="" >
+		                </a>
+	                </div>
 	                <h3 style="white-space: nowrap; overflow: hidden; text-overflow:ellipsis">
-	                    <a src="${product.main_img}" class="listenersClass">${product.name}</a>
+	                    <a href="/listing?product_id=${product.product_id}" src="${product.main_img}" class="listenersClass">${product.name}</a>
 	                </h3>
 	                <h4 style="color:#228D57;">
                 		$
@@ -57,8 +68,6 @@
         <!-- /.row -->
 		
 		
-        <hr>
-
         <!-- Pagination -->
         <@p.page>
         </@p.page>

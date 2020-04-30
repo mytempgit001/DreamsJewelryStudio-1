@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -23,8 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.dreamsjewelrystudio.additional.Pagination;
-import com.dreamsjewelrystudio.additional.PayPalIntegrator;
+import com.dreamsjewelrystudio.util.Pagination;
+import com.dreamsjewelrystudio.util.PayPalIntegrator;
 
 @Configuration
 @EnableTransactionManagement
@@ -34,7 +34,6 @@ import com.dreamsjewelrystudio.additional.PayPalIntegrator;
 public class SpringConfig {
 	
 	@Autowired private Environment env;
-	@Autowired private DataSource ds;
 	
 	@Bean
 	public DataSource getDataSource() {
@@ -65,7 +64,8 @@ public class SpringConfig {
         hibernateProperties.put("hibernate.show_sql", true);
         hibernateProperties.put("hibernate.format_sql", true);
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
+        hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "true");
+        hibernateProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
         hibernateProperties.setProperty("hibernate.cache.use_query_cache", "false");
         return hibernateProperties;
     }
@@ -80,11 +80,6 @@ public class SpringConfig {
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
-    }
-    
-    @Bean
-    public JdbcTemplate initJdbcTemplate() {
-    	return new JdbcTemplate(ds);
     }
     
     @Bean(name="pagination")
@@ -102,6 +97,7 @@ public class SpringConfig {
     }
     
     @Bean
+    @Lazy(true)
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

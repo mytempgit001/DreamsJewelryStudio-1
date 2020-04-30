@@ -38,7 +38,7 @@ import com.dreamsjewelrystudio.service.ProductImagesService;
 import com.dreamsjewelrystudio.service.ProductPriceSizeService;
 import com.dreamsjewelrystudio.service.ProductService;
 import com.dreamsjewelrystudio.service.SessionService;
-import com.dreamsjewelrystudio.utils.Util;
+import com.dreamsjewelrystudio.util.Util;
 
 @Controller
 @RequestMapping("/admin")

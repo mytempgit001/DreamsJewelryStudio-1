@@ -39,13 +39,16 @@
 
                     <!-- Wrapper for slides -->
                     <div class="carousel-inner">
-                        <div class="item active">
-                        	<img class="img-responsive" src="${product.main_img}" width="750" height="500" alt="">
+                        <div style="height: 600px;" class="item active">
+                        	<img style="max-width: 100%; max-height: 100%; width: 100%; height: 100%;  top: 0; bottom: 0;
+    								left: 0; right: 0; margin: auto; object-fit: cover;"  class="img-responsive" src="${product.main_img}" width="750" height="500" alt="">
                         </div>
                         <#list product.images as image>
-                        	<div class="item">
+                        	<div style="height: 600px;" class="item">
 	                        	<#if image??>
-	                        		<img class="img-responsive" src="${image.url}" width="750" height="500" alt="">
+	                        		<img style="max-width: 100%; max-height: 100%; width: 100%; height: 100%;  top: 0; bottom: 0;
+    								left: 0; right: 0; margin: auto; object-fit: cover;" 
+    								class="img-responsive" src="${image.url}" width="750" height="500" alt="">
 	                        		<#else>
 	                        		<img class="img-responsive" src="${product.images[0].url}" width="750" height="500" alt="">
                         		</#if>
@@ -227,6 +230,8 @@
     	    success: function(data) {
     	    	if(data.localeCompare("SUCCES")){
     	    		window.location = "/cart";
+    	    	}else if(data.localeCompare("ERROR")){
+    	    		alert("Something went wrong! Please try again later or let us know.");
     	    	}
     	    },
     	    error: function(xhr) {

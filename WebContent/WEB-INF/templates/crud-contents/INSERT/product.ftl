@@ -6,53 +6,69 @@
 		    <div class="col">
 			    <div>
 				<h4>PRODUCT</h4>
-				<div align="right">
-				<br>
-				<label>name:</label> <code>*</code> 
-				<input id="name" class="requiredInputs"></input> 
-				<br>
-				<label>description:</label> <code>*</code> 
-				<input id="description" class="requiredInputs"></input> 
-				<br>
-				<label>main_img:</label> <code>*</code> 
-				<input id="main_img" class="requiredInputs"></input> 
-				<br>
-				<label>material:</label> <code>*</code> 
-				<input id="material" class="requiredInputs"></input> 
-				<br>
-				<label>product_type:</label> <code>*</code> 
-				<input onclick="selectOnlyProdType('Check1')" id="Check1" type="checkbox" name="option1" value="Resin" checked> Resin 
-				<input onclick="selectOnlyProdType('Check2')" id="Check2" type="checkbox" name="option2" value="Gemstone"> Gemstone 
-				<br>
-				<div align="center">
-					<label>category:</label> <code>*</code> 
-					<div style="display: flex;flex-direction: column;justify-content: space-between;">
-						<input onclick="selectOnlyCategory('category1')" id="category1" type="checkbox" name="option1" value="Earrings" checked> Earrings 
-						<input onclick="selectOnlyCategory('category2')" id="category2" type="checkbox" name="option2" value="Bracelets"> Bracelets
-						<input onclick="selectOnlyCategory('category3')" id="category3" type="checkbox" name="option3" value="Rings"> Rings 
-						<input onclick="selectOnlyCategory('category4')" id="category4" type="checkbox" name="option4" value="Necklaces"> Necklaces
+					<div id="requisitesBlock" align="right">
+						<div style="vertical-align: middle;">
+							<label>category:</label> <code>*</code>
+							<div>
+								<input onclick="selectOnlyCategory('category1')" id="category1" type="checkbox" name="option1" value="Earrings" checked> Earrings 
+								<input onclick="selectOnlyCategory('category2')" id="category2" type="checkbox" name="option2" value="Bracelets"> Bracelets
+								<input onclick="selectOnlyCategory('category3')" id="category3" type="checkbox" name="option3" value="Rings"> Rings 
+								<input onclick="selectOnlyCategory('category4')" id="category4" type="checkbox" name="option4" value="Necklaces"> Necklaces
+							</div>
+						</div>
+						<br>
+						<label>product_type:</label> <code>*</code> 
+						<input onclick="selectOnlyProdType('Check1')" id="Check1" type="checkbox" name="option1" value="Resin" checked> Resin 
+						<input onclick="selectOnlyProdType('Check2')" id="Check2" type="checkbox" name="option2" value="Gemstone"> Gemstone 
+						<br>
+						<label>name:</label> <code>*</code> 
+						<input id="name" class="requiredInputs"></input> 
+						<br>
+						<label>description:</label> <code>*</code> 
+						<input id="description" class="requiredInputs"></input> 
+						<br>
+						<label>main_img:</label> <code>*</code> 
+						<input id="main_img" class="requiredInputs"></input> 
+						<br><div class='materials'>
+						<label>material:</label> <code>*</code> 
+						<input class='materialValue' id="material" class="requiredInputs"></input> </div>
+						<br>
 					</div>
-				</div>
-				<br>
-				<script>
-				function selectOnlyProdType(id) {
-				    for (var i = 1;i <= 2; i++)
-				    {
-				        document.getElementById("Check" + i).checked = false;
-				    }
-				    document.getElementById(id).checked = true;
-				}
-				
-				function selectOnlyCategory(id) {
-				    for (var i = 1;i <= 4; i++)
-				    {
-				        document.getElementById("category" + i).checked = false;
-				    }
-				    document.getElementById(id).checked = true;
-				}
-				</script>
-				<br>
-				</div>
+					<br>
+					<button onclick="removeMaterial()" id="-">-</button>
+				 	<button onclick="addMaterial()" id="+">+</button>
+					<br>
+					<script>
+					function removeMaterial(){
+						var arr = document.querySelectorAll(".materials");
+			 			if(arr!=null && arr.length>1)
+			 				arr[arr.length-1].remove();
+					}
+					
+					function addMaterial(){
+						var newDiv = document.createElement("div");
+						newDiv.innerHTML = "<div class='materials'><label>material:</label> <code>*</code> "
+							+ "<input class='materialValue' id='material' class='requiredInputs'></input> </div>";
+						var element = document.getElementById("requisitesBlock");
+						element.appendChild(newDiv);
+					}
+					
+					function selectOnlyProdType(id) {
+					    for (var i = 1;i <= 2; i++)
+					    {
+					        document.getElementById("Check" + i).checked = false;
+					    }
+					    document.getElementById(id).checked = true;
+					}
+					
+					function selectOnlyCategory(id) {
+					    for (var i = 1;i <= 4; i++)
+					    {
+					        document.getElementById("category" + i).checked = false;
+					    }
+					    document.getElementById(id).checked = true;
+					}
+					</script>
 				</div>
 		    </div>
 		    <div class="col">
@@ -68,7 +84,7 @@
 							<input class="requiredInputs priceSize"></input> 
 							<br>
 							<label>discount_price:</label> <code style="color:blue;">I</code>
-							<input class="priceSize numberic"></input> 
+							<input class="priceSize numberic float"></input> 
 							<br>
 							<label>quantity:</label> <code style="color:blue;">I</code> <code>*</code>
 							<input class="requiredInputs priceSize numberic"></input> 
@@ -89,7 +105,7 @@
 											"<input class='requiredInputs priceSize'></input> "+
 											"<br>"+
 											"<label>discount_price:</label> <code style='color:blue;'>I</code> "+
-											"<input class='priceSize numberic'></input> "+
+											"<input class='priceSize numberic float'></input> "+
 											"<br>"+
 											"<label>quantity:</label> <code style='color:blue;'>I</code> <code>*</code> "+
 											"<input class='requiredInputs priceSize numberic'></input> </div>";
@@ -197,6 +213,18 @@
        		    }
 				return category;
 			}
+			
+			function getMaterials(){
+				var str = "";
+				var arr = document.querySelectorAll(".materialValue");
+				for(var i = 0; i < arr.length; i++){
+					if(i != arr.length-1)
+						str += arr[i].value + " | ";
+					else
+						str += arr[i].value;
+				}
+				return str;
+			}
 		
 			function insert(){
 				var arr = document.querySelectorAll(".requiredInputs");
@@ -217,6 +245,7 @@
 				var priceSize = getPriceSize();
 				var images = getImages();
 				var category = getCategory();
+				var materials = getMaterials();
 				
 				if(!checkForNumbers())
 					return;
@@ -229,7 +258,7 @@
 			 	    	name : document.getElementById("name").value,
 						description : document.getElementById("description").value,
 						main_img : document.getElementById("main_img").value,
-						material : document.getElementById("material").value,
+						material : materials,
 						product_type : product_type,
 						category : category,
 						images : images, 
@@ -240,12 +269,13 @@
 			 	    success: function(data) {
 				 		if(data == "SUCCESS"){
 				 			alert("New item was inserted");
+				 			window.location = "/admin/modifying?table=product&operation=INSERT";
 				 		}
 			 	    },
 			 	    error: function(xhr) {
 			 	    	console.log(xhr.responseText);
 			 	    }
-			     });
+			     });  
 			}
 			
 			function checkForNumbers(){
@@ -253,6 +283,11 @@
 				var inputs = document.querySelectorAll(".numberic");	
 				for(var i = 0; i < inputs.length; i++){
 					if(!inputs[i].value.match(numbers)){
+						if(inputs[i].className.includes("float")){
+							if(!inputs[i].value.includes("/\./") && inputs[i].value.match(/^[^a-zA-Z]+$/))
+								continue;
+						}
+						
 						alert("Fields that marked as I are able to contain only numberic value");
 						return false;
 					}
