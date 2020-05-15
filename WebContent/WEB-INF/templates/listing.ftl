@@ -1,6 +1,8 @@
 <#import "parts/header.ftl" as header>
 <#import "parts/footer.ftl" as footer>
 <@header.page>
+<link href="static/css/modal.css" rel="stylesheet">
+<link href="static/js/modalanim.js" rel="js">
 
     <!-- Page Content -->
     <div class="container">
@@ -125,59 +127,48 @@
      				</select>
    				 </ul>
    				 <ul>
-   				 	<button id='AddToCart' style='width:100%'>Add to cart</button>
-   				 	<button id='Buy' style='width:100%'>Buy now</button>
+   				 	<button id="AddToCart" class="btn btn-primary" style="width:100%;">Add to cart</button>
                  </ul>
 			</div>
         </div>
         <!-- /.row -->
-
         <!-- Related Projects Row -->
         <div class="row">
-
             <div class="col-lg-12">
                 <h3 class="page-header">Related Projects</h3>
             </div>
-
-            <div class="col-sm-3 col-xs-6">
-                <a href="#">
-                    <img class="img-responsive img-hover img-related" src="https://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-sm-3 col-xs-6">
-                <a href="#">
-                    <img class="img-responsive img-hover img-related" src="https://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-sm-3 col-xs-6">
-                <a href="#">
-                    <img class="img-responsive img-hover img-related" src="https://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
-            <div class="col-sm-3 col-xs-6">
-                <a href="#">
-                    <img class="img-responsive img-hover img-related" src="https://placehold.it/500x300" alt="">
-                </a>
-            </div>
-
+			<#if related??>
+				<#list related as prd>
+					<div style="height: 120px;" class="col-sm-3 col-xs-6">
+		                <a href="/listing?product_id=${prd.getProduct_id()}">
+		                    <img style="max-width: 100%; max-height: 100%; width: 100%; height: 100%;  top: 0; bottom: 0;
+	    								left: 0; right: 0; margin: auto; object-fit: cover;" 
+									 class="img-responsive img-hover img-related" src="${prd.getMain_Img()}" alt="">
+		                </a>
+	            	</div>
+				</#list>
+			</#if>
         </div>
         <!-- /.row -->
-
         <hr>
-
         <!-- Footer -->
        <@footer.page>
        </@footer.page>
-
+	<div id="myModal" class="modal">
+	
+	  <!-- Modal content -->
+	  <div class="modal-content">
+	    <div class="modal-header">
+	      <span class="close">&times;</span>
+	      <h2>Product was added at your cart</h2>
+	    </div>
+	  </div>
+	
+	</div>
     </div>
     <!-- /.container -->
-
     <!-- jQuery -->
     <script src="static/js/jquery.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
     
@@ -229,13 +220,26 @@
     	    type: "POST",
     	    success: function(data) {
     	    	if(data.localeCompare("SUCCES")){
-    	    		window.location = "/cart";
-    	    	}else if(data.localeCompare("ERROR")){
+    	    		var modal = document.getElementById("myModal");
+    	    		modal.style.display = "block";
+    	    		
+    	    		var span = document.getElementsByClassName("close")[0];
+    	    		span.onclick = function() {
+    	    		  modal.style.display = "none";
+    	    		}
+    	    		
+    	    		window.onclick = function(event) {
+    	    		  if (event.target == modal) {
+    	    		    modal.style.display = "none";
+    	    		  }
+    	    		}
+    	    	}else{
     	    		alert("Something went wrong! Please try again later or let us know.");
     	    	}
     	    },
     	    error: function(xhr) {
     	    	console.log("error");
+    	    	alert("Something went wrong! Please try again later or let us know.");
     	    }
 	     });
    	});
@@ -244,5 +248,4 @@
     
 </@header.page>
 </body>
-
 </html>

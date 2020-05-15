@@ -9,16 +9,21 @@ import com.dreamsjewelrystudio.models.Messages;
 import com.dreamsjewelrystudio.repository.MessagesRepository;
 
 @Service
-public class MessagesService {
+public class MessagesService extends CRUDService<Messages>{
 	
 	@Autowired
 	private MessagesRepository msgRepo;
 	
-	public void updateMessage(Messages msg) {
+	public void insert(Messages msg) {
 		msgRepo.saveAndFlush(msg);
 	}
 	
 	public List<Messages> findAll(){
 		return msgRepo.findAll();
+	}
+
+	@Override
+	public void delete(Messages entity) {
+		msgRepo.delete(entity);
 	}
 }

@@ -1,10 +1,10 @@
 package com.dreamsjewelrystudio.controllers;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.servlet.http.Cookie;
@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,11 +26,12 @@ import com.dreamsjewelrystudio.models.Item;
 import com.dreamsjewelrystudio.models.Product;
 import com.dreamsjewelrystudio.models.ProductPriceSize;
 import com.dreamsjewelrystudio.models.Session;
+import com.dreamsjewelrystudio.projections.RelatedProductsProjection;
 import com.dreamsjewelrystudio.service.ItemService;
 import com.dreamsjewelrystudio.service.ProductPriceSizeService;
 import com.dreamsjewelrystudio.service.ProductService;
 import com.dreamsjewelrystudio.service.SessionService;
-import com.dreamsjewelrystudio.util.Pagination;
+import com.dreamsjewelrystudio.util.CatalogPagination;
 import com.dreamsjewelrystudio.util.Util;
 import com.dreamsjewelrystudio.util.comparators.DateComparator;
 import com.dreamsjewelrystudio.util.comparators.PriceComparator;
@@ -44,25 +46,27 @@ public class CatalogController {
 	
 	@Autowired
 	@Qualifier("pagination")
-	private Pagination pagination;
+	private CatalogPagination pagination;
 	
-	private String processCatalogPage(Model model, Integer numPage, String filterBy, String sortBy) {
-		
+	@GetMapping("/catalog")
+	public String catalog(@RequestParam(name="page", required=false, defaultValue ="1") Integer numPage,
+			@RequestParam(name="filter", defaultValue="", required=false) String filterBy,
+			@RequestParam(name="sort", defaultValue="", required=false) String sortBy,
+			Model model) {
 		model.addAttribute("pagesAmount", pagination.getPagesAmount());
 		int[] range = pagination.calculateRange(numPage);
 		if(range == null) {
-			model.addAttribute("message", numPage + " catalog page does not exist");
+			model.addAttribute("exceptionMsg", numPage + " catalog page does not exist");
 			return "404";
 		}
 		model.addAttribute("activePage", numPage);
-		
 		List<Product> products;
-		if(filterBy!=null) 
-			products = prdSrvc.findProdcutsWithPriceByTypeOrCategoryLimit(filterBy, range[0], range[1]);
+		if(Util.isStringNotEmpty(filterBy)) 
+			products = prdSrvc.findProductsWithPriceByTypeOrCategoryLimit(filterBy, range[0], range[1]);
 		else
 			products = prdSrvc.findProductsWithPriceLimit(range[0], range[1]);
 		
-		if(sortBy!=null) { 
+		if(Util.isStringNotEmpty(sortBy)) { 
 			switch(sortBy) {
 				case "By date: Old to new": products.sort(new DateComparator(false)); break;
 				case "By date: New to old": products.sort(new DateComparator(true)); break;
@@ -71,89 +75,22 @@ public class CatalogController {
 			}
 		}
 		
-		model.addAttribute("sorts", getSorts(sortBy));
-		model.addAttribute("filters", getFilters(filterBy));
+		model.addAttribute("sorting", sortBy);
+		model.addAttribute("filtering", filterBy);
 		model.addAttribute("products", products);
 		return "catalog";
 	}
-	
-	private List<String> getSorts(String sort){
-		List<String> names = new ArrayList<>();
-		
-		names.add("<option value=\"All\">All</option>");
-		names.add("<option value=\"By price: Low to high\">By price: Low to High</option>");
-		names.add("<option value=\"By price: High to low\">By price: High to low</option>");
-		names.add("<option value=\"By date: Old to new\">By date: Old to new</option>");
-		names.add("<option value=\"By date: New to old\">By date: New to old</option>");
-		
-		if(sort == null) {
-			names.set(0, insertIntoString(names.get(0)));
-		}else if(sort.equals("By price: Low to high")) {
-			names.set(1, insertIntoString(names.get(1)));
-		}else if(sort.equals("By price: High to low")) {
-			names.set(2, insertIntoString(names.get(2)));
-		}else if(sort.equals("By date: Old to new")) {
-			names.set(3, insertIntoString(names.get(3)));
-		}else if(sort.equals("By date: New to old")) {
-			names.set(4, insertIntoString(names.get(4)));
-		}
-		
-		return names;
-	}
-	
-	private List<String> getFilters(String filter) {
-		List<String> names = new ArrayList<>();
-		
-		names.add("<option value=\"All pieces\">All pieces</option>");
-		names.add("<option value=\"Gemstone Jewelry\">Gemstone Jewelry</option>");
-		names.add("<option value=\"Epoxy Resin Jewelry\">Epoxy Resin Jewelry</option>");
-		names.add("<option value=\"Earrings\">Earrings</option>");
-		names.add("<option value=\"Bracelets\">Bracelets</option>");
-		names.add("<option value=\"Rings\">Rings</option>");
-		names.add("<option value=\"Necklaces\">Necklaces</option>");
-		
-		if(filter == null) {
-			names.set(0, insertIntoString(names.get(0)));
-		}else if(filter.equals("Gemstone")) {
-			names.set(1, insertIntoString(names.get(1)));
-		}else if(filter.equals("Resin")) {
-			names.set(2, insertIntoString(names.get(2)));
-		}else if(filter.equals("Earrings")) {
-			names.set(3, insertIntoString(names.get(3)));
-		}else if(filter.equals("Bracelets")) {
-			names.set(4, insertIntoString(names.get(4)));
-		}else if(filter.equals("Rings")) {
-			names.set(5, insertIntoString(names.get(5)));
-		}else if(filter.equals("Necklaces")) {
-			names.set(6, insertIntoString(names.get(6)));
-		}
-		
-		return names;
-	}
-	
-	private String insertIntoString(String originalStr) {
-		int index = 7;
-		String temp1 = originalStr.substring(0, index);
-		String temp2 = originalStr.substring(index, originalStr.length());
-		
-		return temp1 + " selected " + temp2; 
-	}
-	
-	@GetMapping("/catalog")
-	public String catalog(@RequestParam(name="page", required=false, defaultValue ="1") Integer numPage,
-			@RequestParam(name="filter", required=false) String filterBy,
-			@RequestParam(name="sort", required=false) String sortBy,
-			Model model) {
-		return processCatalogPage(model, numPage, filterBy, sortBy);
-	}
-	
 	
 	@GetMapping("/listing")
 	public String listing(@RequestParam(name="product_id", required = false) Long productID, Model model) {
 		if(productID!=null) {
 			Product product = prdSrvc.findProductWithChildrenByID(productID);
+			List<RelatedProductsProjection> related = prdSrvc.findRelated(product.getCategory(), 
+					product.getProduct_id(),
+					PageRequest.of(new Random().nextInt(pagination.getPagesAmount()), 4));
 			if(product!=null) {
 				model.addAttribute("product", product);
+				model.addAttribute("related", related);
 				return "listing";
 			}
 		}
@@ -164,18 +101,17 @@ public class CatalogController {
 	@PostMapping("/addToCart")
 	@ResponseBody
 	public String cart(
-			@RequestParam(name="id", required = false) Long productID,
-			@RequestParam(name="quantity", required = false, defaultValue = "1") Integer quantity,
-			@RequestParam(name="size", required = false, defaultValue = "noSize") String size,
+			@RequestParam(name="id", required = true) Long productID,
+			@RequestParam(name="quantity", required = true) Integer quantity,
+			@RequestParam(name="size", required = true) String size,
 			HttpServletRequest request, HttpServletResponse response,
 			Model model) {
 		try {
 			Cookie sessionCookie = Util.getSessionID(request.getCookies());
-			Session currentSession;
 			Item item;
 			if (Objects.nonNull(sessionCookie)) { // если есть сессия
 				String sessIDValue = sessionCookie.getValue();
-				currentSession = sessSrvc.findSessionItemPrsByToken(sessIDValue);
+				Session currentSession = sessSrvc.findSessionItemPrsByToken(sessIDValue);
 				if(Objects.nonNull(currentSession)) {
 					List<Item> itemsList = currentSession.getItems();
 					item = itemsList.stream()
@@ -188,15 +124,15 @@ public class CatalogController {
 						item = createNewItem(productID, size, quantity, currentSession.getSessID());
 					}
 				}else {
-					return "DENIAL OF SERVICE (no session was found)";
+			        item = createNewItem(productID, size, quantity, 
+			        		sessSrvc.createNewSessionWithItems(assignSession(response)).getSessID());
 				}
 			}else { // если сессии нет
-				currentSession = sessSrvc.createNewSessionWithItems(assignSession(response));
-		        item = createNewItem(productID, size, quantity, currentSession.getSessID());
+		        item = createNewItem(productID, size, quantity, 
+		        		sessSrvc.createNewSessionWithItems(assignSession(response)).getSessID());
 			}
 			
-			itmSrvc.persistItem(item);
-			
+			itmSrvc.insert(item);
 			return "SUCCESS";
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -243,8 +179,9 @@ public class CatalogController {
 	}
 	
 	@ExceptionHandler(Exception.class)
-	public String handleException(Exception e) {
+	public String handleException(Exception e, Model model) {
 		e.printStackTrace();
+		if(Util.isStringNotEmpty(e.getMessage())) model.addAttribute("exceptionMsg", e.getMessage());
 		return "404";
 	}
 }

@@ -12,7 +12,7 @@ import com.dreamsjewelrystudio.models.Session;
 import com.dreamsjewelrystudio.repository.SessionRepository;
 
 @Service
-public class SessionService {
+public class SessionService extends CRUDService<Session>{
 	
 	@Autowired private SessionRepository sessRepository;
 	@Autowired private EntityManagerFactory emf;
@@ -82,5 +82,15 @@ public class SessionService {
 			return null;
 		}
 		return sess;
+	}
+
+	@Override
+	public void insert(Session entity) {
+		sessRepository.saveAndFlush(entity);
+	}
+
+	@Override
+	public void delete(Session entity) {
+		sessRepository.delete(entity);
 	}
 }

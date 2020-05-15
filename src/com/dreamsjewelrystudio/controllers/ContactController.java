@@ -2,6 +2,8 @@ package com.dreamsjewelrystudio.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dreamsjewelrystudio.models.Messages;
 import com.dreamsjewelrystudio.service.MessagesService;
+import com.dreamsjewelrystudio.util.Util;
 
 @Controller
 public class ContactController {
@@ -35,7 +38,14 @@ public class ContactController {
 		message.setEmail(email);
 		message.setMsg(msg);
 		
-		msgSrvc.updateMessage(message);
+		msgSrvc.insert(message);
 		return "SUCCESS";
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public String handleException(Exception e, Model model) {
+		e.printStackTrace();
+		if(Util.isStringNotEmpty(e.getMessage())) model.addAttribute("exceptionMsg", e.getMessage());
+		return "404";
 	}
 }

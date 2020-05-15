@@ -14,6 +14,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -23,8 +24,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.dreamsjewelrystudio.util.Pagination;
+import com.dreamsjewelrystudio.util.CatalogPagination;
 import com.dreamsjewelrystudio.util.PayPalIntegrator;
+import com.dreamsjewelrystudio.util.Util;
+import com.dreamsjewelrystudio.util.administration.AdminDataManager;
 
 @Configuration
 @EnableTransactionManagement
@@ -34,6 +37,7 @@ import com.dreamsjewelrystudio.util.PayPalIntegrator;
 public class SpringConfig {
 	
 	@Autowired private Environment env;
+	@Autowired private DataSource ds;
 	
 	@Bean
 	public DataSource getDataSource() {
@@ -48,7 +52,7 @@ public class SpringConfig {
 	@Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(getDataSource());
+        entityManagerFactoryBean.setDataSource(ds);
         entityManagerFactoryBean.setPackagesToScan(new String[] {"com.dreamsjewelrystudio.models"});
 
         final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -83,9 +87,9 @@ public class SpringConfig {
     }
     
     @Bean(name="pagination")
-    public Pagination getPager() {
-    	String size = env.getProperty("pagination.size");
-    	return new Pagination(Integer.parseInt(size));
+    public CatalogPagination getPager() {
+    	Util.PRODUCTS_AMOUNT = new JdbcTemplate(ds).queryForObject("Select count(*) from product", Integer.class);
+    	return new CatalogPagination(Integer.parseInt(env.getProperty("pagination.size")));
     }
     
     @Bean
@@ -101,4 +105,11 @@ public class SpringConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+    @Bean
+    @Lazy(true)
+    public AdminDataManager dataManager() {
+    	System.out.println("AdminDataManager is initializing...");
+    	return new AdminDataManager();
+    }	
 }

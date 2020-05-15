@@ -9,7 +9,7 @@ import com.dreamsjewelrystudio.models.ProductPriceSize;
 import com.dreamsjewelrystudio.repository.ProductPriceSizeRepository;
 
 @Service
-public class ProductPriceSizeService {
+public class ProductPriceSizeService extends CRUDService<ProductPriceSize>{
 
 	@Autowired
 	private ProductPriceSizeRepository prsRepository;
@@ -18,8 +18,8 @@ public class ProductPriceSizeService {
 		return prsRepository.findAll();
 	}
 	
-	public ProductPriceSize persistsEntry(ProductPriceSize prs) {
-		return prsRepository.saveAndFlush(prs);
+	public void insert(ProductPriceSize prs) {
+		prsRepository.saveAndFlush(prs);
 	}
 	
 	public List<ProductPriceSize> persistsAll(List<ProductPriceSize> prs) {
@@ -28,5 +28,11 @@ public class ProductPriceSizeService {
 	
 	public ProductPriceSize getPrsBySizeAndProductId(String size, long id) {
 		return prsRepository.findPrsBySizeAndProdId(size, id);
+	}
+
+
+	@Override
+	public void delete(ProductPriceSize entity) {
+		prsRepository.delete(entity);
 	}
 }

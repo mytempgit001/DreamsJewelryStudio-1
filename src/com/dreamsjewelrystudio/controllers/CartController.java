@@ -30,12 +30,7 @@ public class CartController {
 			Session currentSession = sessSrvc.findSessionItemPrsPrdByToken(sessionCookie);
 			if(currentSession!=null) {
 				List<Item> items = currentSession.getItems();
-				
-				float totalPrice = 0f;
-				for(int i = 0; i < items.size(); i++) { 
-					totalPrice+=items.get(i).getPrice();
-				}
-				
+				Float totalPrice = items.stream().map(i->i.getPrice()).reduce(Float::sum).orElse(0f);
 				model.addAttribute("items", items);
 				model.addAttribute("totalPrice", totalPrice);
 			}
@@ -65,8 +60,9 @@ public class CartController {
 	}
 	
 	@ExceptionHandler(Exception.class)
-	public String handleException(Exception e) {
+	public String handleException(Exception e, Model model) {
 		e.printStackTrace();
+		if(Util.isStringNotEmpty(e.getMessage())) model.addAttribute("exceptionMsg", e.getMessage());
 		return "404";
 	}
 }

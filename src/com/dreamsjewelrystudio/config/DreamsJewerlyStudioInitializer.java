@@ -12,17 +12,16 @@ public class DreamsJewerlyStudioInitializer implements WebApplicationInitializer
 	
 	@Override
     public void onStartup(ServletContext container) {
-      // Create the 'root' Spring application context
-      AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+		// Create the 'root' Spring application context
+		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
 		rootContext.register(SpringConfig.class, WebConfig.class);
 
-      // Manage the lifecycle of the root application context
-      container.addListener(new ContextLoaderListener(rootContext));
+		// Manage the lifecycle of the root application context
+		container.addListener(new ContextLoaderListener(rootContext));
 
-      // Register and map the dispatcher servlet
-      ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(rootContext));
-      dispatcher.setLoadOnStartup(1);
-      dispatcher.addMapping("/");
+		// Register and map the dispatcher servlet
+		ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(rootContext));
+		dispatcher.setLoadOnStartup(1);
+		dispatcher.addMapping("/");
     }
-
 }

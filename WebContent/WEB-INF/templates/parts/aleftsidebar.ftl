@@ -57,13 +57,13 @@
         </a>
         <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="/admin/atables?table=admins">admins</a>
-            <a class="collapse-item" href="/admin/atables?table=item">item</a>
-            <a class="collapse-item" href="/admin/atables?table=messages">messages</a>
-            <a class="collapse-item" href="/admin/atables?table=product">product</a>
-            <a class="collapse-item" href="/admin/atables?table=product_images">product_images</a>
-            <a class="collapse-item" href="/admin/atables?table=product_price_size">product_price_size</a>
-            <a class="collapse-item" href="/admin/atables?table=session">session</a>
+            <a class="collapse-item" href="/admin/atables?table=AdminsService">admins</a>
+            <a class="collapse-item" href="/admin/atables?table=ItemService">item</a>
+            <a class="collapse-item" href="/admin/atables?table=MessagesService">messages</a>
+            <a class="collapse-item" href="/admin/atables?table=ProductService">product</a>
+            <a class="collapse-item" href="/admin/atables?table=ProductImagesService">product_images</a>
+            <a class="collapse-item" href="/admin/atables?table=ProductPriceSizeService">product_price_size</a>
+            <a class="collapse-item" href="/admin/atables?table=SessionService">session</a>
           </div>
         </div>
       </li>
