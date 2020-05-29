@@ -14,6 +14,10 @@ import com.dreamsjewelrystudio.repository.SessionRepository;
 @Service
 public class SessionService extends CRUDService<Session>{
 	
+	public SessionService() {
+		super(Session.class);
+	}
+
 	@Autowired private SessionRepository sessRepository;
 	@Autowired private EntityManagerFactory emf;
 	
@@ -40,6 +44,10 @@ public class SessionService extends CRUDService<Session>{
 	
 	public Session createNewSessionWithItems(Session session) {
 		return sessRepository.saveAndFlush(session);
+	}
+	
+	public Session findSessionByToken(String token) {
+		return sessRepository.findSessionByToken(token);
 	}
 	
 	public List<Session> findAll(){

@@ -23,16 +23,22 @@
                     <li class="active">Catalog</li>
                     
                     <select id="sort" style="float: right; width: 15%; margin-left: 5px;">
-                    	<#list sorts as sort>
-                    		${sort}
-                    	</#list>
+	                    <option ${(sorting == "All")?then("selected",'')} value="All">All</option>
+						<option ${(sorting == "By price: Low to high")?then("selected",'')} value="By price: Low to high">By price: Low to High</option>
+						<option ${(sorting == "By price: High to low")?then("selected",'')} value="By price: High to low">By price: High to low</option>
+						<option ${(sorting == "By date: Old to new")?then("selected",'')} value="By date: Old to new">By date: Old to new</option>
+						<option ${(sorting == "By date: New to old")?then("selected",'')} value="By date: New to old">By date: New to old</option>
                     </select>
                     <h20 style="float: right">Sort by:</h20>
                     
                     <select id="filter" style="float: right; width: 15%; margin-right: 10px; margin-left: 5px;">
-                    	<#list filters as filter>
-                    		${filter}
-                    	</#list>
+                    	<option ${(filtering == "All pieces")?then("selected", '')} value="All pieces">All pieces</option>
+						<option ${(filtering == "Gemstone Jewelry")?then("selected", '')} value="Gemstone Jewelry">Gemstone Jewelry</option>
+						<option ${(filtering == "Epoxy Resin Jewelry")?then("selected", '')} value="Epoxy Resin Jewelry">Epoxy Resin Jewelry</option>
+						<option ${(filtering == "Earrings")?then("selected", '')} value="Earrings">Earrings</option>
+						<option ${(filtering == "Bracelets")?then("selected", '')} value="Bracelets">Bracelets</option>
+						<option ${(filtering == "Rings")?then("selected", '')} value="Rings">Rings</option>
+						<option ${(filtering == "Necklaces")?then("selected", '')} value="Necklaces">Necklaces</option>
                     </select>
                     <h21 style="float: right">Filter by:</h21>
                 </ol>
@@ -82,12 +88,6 @@
     </div>
     <!-- /.container -->
 
-    <!-- jQuery -->
-    <script src="static/js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="static/js/bootstrap.min.js"></script>
-    
     <script>
     var activities = document.getElementById("sort");
     activities.addEventListener("change", function() {
@@ -132,12 +132,6 @@
         {
         	var str = activities1.value;
         	
-        	if(str == "Epoxy Resin Jewelry"){
-        		str = "Resin";
-        	}else if(str == "Gemstone Jewelry"){
-        		str = "Gemstone";
-        	}
-	
         	var newUrl = "";
         	var currentUrl = window.location.href;
         	var index = currentUrl.includes('filter');

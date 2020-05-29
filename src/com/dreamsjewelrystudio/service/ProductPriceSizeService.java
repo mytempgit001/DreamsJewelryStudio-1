@@ -11,6 +11,11 @@ import com.dreamsjewelrystudio.repository.ProductPriceSizeRepository;
 @Service
 public class ProductPriceSizeService extends CRUDService<ProductPriceSize>{
 
+	public ProductPriceSizeService() {
+		super(ProductPriceSize.class);
+	}
+
+
 	@Autowired
 	private ProductPriceSizeRepository prsRepository;
 	

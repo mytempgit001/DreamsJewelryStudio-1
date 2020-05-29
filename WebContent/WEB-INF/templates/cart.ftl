@@ -69,7 +69,6 @@
             </div>
         </div>
         <!-- /.row -->
-        
 		<div class="shopping-cart">
 	  		<!-- Title  background: -->
 	 		 <div class="title">

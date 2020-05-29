@@ -17,6 +17,10 @@ import com.dreamsjewelrystudio.repository.ProductRepository;
 @Service
 public class ProductService extends CRUDService<Product>{
 	
+	public ProductService() {
+		super(Product.class);
+	}
+
 	@Autowired private EntityManagerFactory emf;
 	@Autowired private ProductRepository prdRepository;
 	

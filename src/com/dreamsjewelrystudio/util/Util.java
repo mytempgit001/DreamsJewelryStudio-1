@@ -9,10 +9,10 @@ public final class Util {
 	public static Integer PRODUCTS_AMOUNT;
 	public static final String ADMIN = "ID";
 	public static final String SESSID = "sessID";
-	public static Cookie getSessionID(Cookie[] cookies) {
+	public static Cookie getSessionID(Cookie[] cookies, String coockie) {
 		if(cookies == null || cookies.length==0) return null;
 		return Arrays.stream(cookies)
-				  .filter(cookie -> cookie.getName().equals(SESSID))
+				  .filter(str -> str.getName().equals(coockie))
 				  .findFirst()
 				  .orElse(null);
 	}

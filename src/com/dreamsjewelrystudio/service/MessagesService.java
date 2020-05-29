@@ -11,6 +11,10 @@ import com.dreamsjewelrystudio.repository.MessagesRepository;
 @Service
 public class MessagesService extends CRUDService<Messages>{
 	
+	public MessagesService() {
+		super(Messages.class);
+	}
+
 	@Autowired
 	private MessagesRepository msgRepo;
 	

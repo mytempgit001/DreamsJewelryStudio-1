@@ -251,7 +251,7 @@
 					return;
 				
 				$.ajax({
-			 	    url: "/admin/modify",
+			 	    url: "/admin/productInsert",
 			 	    dataType: "json",
 		            contentType: "application/json",
 			 	    data: JSON.stringify({

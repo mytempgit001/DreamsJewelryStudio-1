@@ -25,8 +25,13 @@
                 <div class="jumbotron">
                     <h1 align="center"><span class="error-404">404</span>
                     </h1>
-                    <p>
-                    The page you're looking for could not be found. Here are some helpful links to get you back on track:</p>
+                    <p style="text-align:center;"> 
+	                    <#if exceptionMsg??>
+	                    	${exceptionMsg}
+	                    	<#else>
+	                    	The page you're looking for could not be found. Here are some helpful links to get you back on track:
+	                    </#if>
+                    </p>
                     <ul>
                         <li>
                             <a href="/">Home</a>

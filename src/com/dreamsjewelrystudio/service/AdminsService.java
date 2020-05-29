@@ -11,6 +11,10 @@ import com.dreamsjewelrystudio.repository.AdminsRepository;
 @Service
 public class AdminsService extends CRUDService<Admins>{
 	
+	public AdminsService() {
+		super(Admins.class);
+	}
+
 	@Autowired
 	private AdminsRepository admRepository;
 	

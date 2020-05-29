@@ -100,44 +100,39 @@ public class CatalogController {
 	
 	@PostMapping("/addToCart")
 	@ResponseBody
-	public String cart(
+	public String cart(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="id", required = true) Long productID,
 			@RequestParam(name="quantity", required = true) Integer quantity,
 			@RequestParam(name="size", required = true) String size,
-			HttpServletRequest request, HttpServletResponse response,
 			Model model) {
-		try {
-			Cookie sessionCookie = Util.getSessionID(request.getCookies());
-			Item item;
-			if (Objects.nonNull(sessionCookie)) { // если есть сессия
-				String sessIDValue = sessionCookie.getValue();
-				Session currentSession = sessSrvc.findSessionItemPrsByToken(sessIDValue);
-				if(Objects.nonNull(currentSession)) {
-					List<Item> itemsList = currentSession.getItems();
-					item = itemsList.stream()
-							.filter(i -> i.getPrs().getProduct_id() == productID && i.getSize().equals(size))
-							.findFirst()
-							.orElse(null);
-					if(!Objects.isNull(item)) { // если есть тот же продукт в корзине
-						processProductPriceSize(item, size, quantity, item.getPrs());
-					}else { // если есть сессия, но в корзине нет этого продукта
-						item = createNewItem(productID, size, quantity, currentSession.getSessID());
-					}
-				}else {
-			        item = createNewItem(productID, size, quantity, 
-			        		sessSrvc.createNewSessionWithItems(assignSession(response)).getSessID());
+		
+		Cookie sessionCookie = Util.getSessionID(request.getCookies(), Util.SESSID);
+		Item item;
+		
+		if (Objects.nonNull(sessionCookie)) { // если есть сессия
+			String sessIDValue = sessionCookie.getValue();
+			Session currentSession = sessSrvc.findSessionItemPrsByToken(sessIDValue);
+			
+			if(Objects.nonNull(currentSession)) {
+				item = currentSession.getItems().stream()
+						.filter(i -> i.getPrs().getProduct_id() == productID && i.getSize().equals(size))
+						.findFirst()
+						.orElse(null);
+				if(!Objects.isNull(item)) { // если есть тот же продукт в корзине
+					processProductPriceSize(item, size, quantity, item.getPrs());
+				}else { // если есть сессия, но в корзине нет этого продукта
+					item = createNewItem(productID, size, quantity, currentSession.getSessID());
 				}
-			}else { // если сессии нет
-		        item = createNewItem(productID, size, quantity, 
-		        		sessSrvc.createNewSessionWithItems(assignSession(response)).getSessID());
+				itmSrvc.insert(item);
+				return "SUCCESS";
 			}
 			
-			itmSrvc.insert(item);
-			return "SUCCESS";
-		}catch(Exception e) {
-			e.printStackTrace();
-			return "ERROR";
 		}
+		
+        item = createNewItem(productID, size, quantity, 
+        		sessSrvc.createNewSessionWithItems(assignSession(response)).getSessID());
+		itmSrvc.insert(item);
+		return "SUCCESS";
 	}
 	
 	private Session assignSession(HttpServletResponse response) {

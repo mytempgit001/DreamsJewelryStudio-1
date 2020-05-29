@@ -1,6 +1,7 @@
 package com.dreamsjewelrystudio.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -16,6 +17,12 @@ public class MainController {
 	@GetMapping("/aboutUs")
 	public String getAboutUsPage() {
 		return "new";
+	}
+	
+	@GetMapping("/404")
+	public String return404(Model model) {
+		model.addAttribute("exceptionMsg", "Something went wrong!");
+		return "404";
 	}
 	
 	@ExceptionHandler(Exception.class)

@@ -11,6 +11,10 @@ import com.dreamsjewelrystudio.repository.ProductImagesRepository;
 @Service
 public class ProductImagesService extends CRUDService<ProductImages>{
 	
+	public ProductImagesService() {
+		super(ProductImages.class);
+	}
+
 	@Autowired
 	private ProductImagesRepository pimgRepo;
 	
