@@ -14,4 +14,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	
 	@Query("SELECT p from Product p where p.category =?1 AND p.product_id !=?2") 
 	List<RelatedProductsProjection> findAll(String category, Long id, Pageable pageable);
+	
 }

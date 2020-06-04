@@ -18,8 +18,10 @@ public class AdminSessionInterceptor implements HandlerInterceptor{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)throws Exception {
 		Cookie coockie = Util.getSessionID(request.getCookies(), Util.ADMIN);
-		if(Objects.isNull(coockie) || !Util.isStringNotEmpty(coockie.getValue()) || Objects.isNull(adminSrvc.findAdminBySession(coockie.getValue())))
+		if(Objects.isNull(coockie) || !Util.isStringNotEmpty(coockie.getValue()) || Objects.isNull(adminSrvc.findAdminBySession(coockie.getValue()))) {
+			response.sendRedirect(request.getContextPath()+"/admin/alogin");
 			return false;
+		}
 		return true;
 	   }
 }

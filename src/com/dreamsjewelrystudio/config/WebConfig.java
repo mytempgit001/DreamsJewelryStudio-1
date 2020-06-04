@@ -46,7 +46,7 @@ public class WebConfig implements WebMvcConfigurer{
 			.excludePathPatterns("/admin/alogin");
 		
 		registry.addInterceptor(getUserSessionInterceptor())
-		.addPathPatterns("/deleteItemFromCart", "/changeAmount");
+		.addPathPatterns("/deleteItemFromCart", "/changeAmount", "/addToCart");
 	}
 	
 	@Bean

@@ -14,12 +14,8 @@ import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 @Entity
 @Table(name = "product")
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @NamedEntityGraphs({
 	@NamedEntityGraph(name = "prd-pimg",attributeNodes = { @NamedAttributeNode("images") }),
 	@NamedEntityGraph(name = "prd-prs",attributeNodes = { @NamedAttributeNode("price") })
@@ -37,10 +33,8 @@ public class Product{
 	private String date;
 	private String time;
 	private String category;
-	@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<ProductImages> images;
-	@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch=FetchType.LAZY)
 	private List<ProductPriceSize> price;
 	

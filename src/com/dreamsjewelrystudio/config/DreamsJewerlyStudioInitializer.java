@@ -14,7 +14,7 @@ public class DreamsJewerlyStudioInitializer implements WebApplicationInitializer
     public void onStartup(ServletContext container) {
 		// Create the 'root' Spring application context
 		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-		rootContext.register(SpringConfig.class, WebConfig.class, SecurityConfig.class);
+		rootContext.register(SecurityConfig.class, SpringConfig.class, WebConfig.class);
 
 		// Manage the lifecycle of the root application context
 		container.addListener(new ContextLoaderListener(rootContext));

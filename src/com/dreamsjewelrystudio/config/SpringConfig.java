@@ -6,12 +6,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,10 +39,24 @@ import com.dreamsjewelrystudio.util.administration.AdminDataManager;
 @EnableJpaRepositories(basePackages = "com.dreamsjewelrystudio.repository")
 @ComponentScan(basePackages = {"com.dreamsjewelrystudio.service"})
 @PropertySource("classpath:/com/dreamsjewelrystudio/app.properties")
+@EnableCaching
 public class SpringConfig {
 	
 	@Autowired private Environment env;
 	@Autowired private DataSource ds;
+	
+	@Bean()
+    public CacheManager cacheManager() {
+		return new EhCacheCacheManager(getEhCacheFactory().getObject());
+    }
+	
+	@Bean
+	public EhCacheManagerFactoryBean getEhCacheFactory(){
+		EhCacheManagerFactoryBean factoryBean = new EhCacheManagerFactoryBean();
+		factoryBean.setConfigLocation(new ClassPathResource("/com/dreamsjewelrystudio/ehcache.xml"));
+		factoryBean.setShared(true);
+		return factoryBean;
+	}
 	
 	@Bean
 	public DataSource getDataSource() {
@@ -68,9 +87,9 @@ public class SpringConfig {
         hibernateProperties.put("hibernate.show_sql", true);
         hibernateProperties.put("hibernate.format_sql", true);
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "true");
-        hibernateProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
-        hibernateProperties.setProperty("hibernate.cache.use_query_cache", "false");
+        hibernateProperties.setProperty("hibernate.cache.use_second_level_cache", "false");
+//        hibernateProperties.setProperty("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+//        hibernateProperties.setProperty("hibernate.cache.use_query_cache", "false");
         return hibernateProperties;
     }
 	
@@ -86,9 +105,14 @@ public class SpringConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
     
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+    	return new JdbcTemplate(ds);
+    }
+    
     @Bean(name="pagination")
     public CatalogPagination getPager() {
-    	Util.PRODUCTS_AMOUNT = new JdbcTemplate(ds).queryForObject("Select count(*) from product", Integer.class);
+    	Util.PRODUCTS_AMOUNT = jdbcTemplate().queryForObject("Select count(*) from product", Integer.class);
     	return new CatalogPagination(Integer.parseInt(env.getProperty("pagination.size")));
     }
     
@@ -109,7 +133,6 @@ public class SpringConfig {
     @Bean
     @Lazy(true)
     public AdminDataManager dataManager() {
-    	System.out.println("AdminDataManager is initializing...");
     	return new AdminDataManager();
     }	
 }

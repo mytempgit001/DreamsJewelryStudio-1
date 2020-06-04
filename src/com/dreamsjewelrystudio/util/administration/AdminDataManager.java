@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import com.dreamsjewelrystudio.models.Product;
 import com.dreamsjewelrystudio.models.ProductImages;
@@ -19,13 +21,16 @@ import com.dreamsjewelrystudio.service.CRUDService;
 import com.dreamsjewelrystudio.service.ProductImagesService;
 import com.dreamsjewelrystudio.service.ProductPriceSizeService;
 import com.dreamsjewelrystudio.service.ProductService;
+import com.dreamsjewelrystudio.util.Util;
 
+@Component
 public class AdminDataManager {
 	
 	@Autowired private ApplicationContext context;
 	@Autowired private ProductService prdSrvc;
 	@Autowired private ProductImagesService pimgSrvc;
 	@Autowired private ProductPriceSizeService prsSrvc;
+	@Autowired private JdbcTemplate jdbcTemplate;
 	
 	public Map<List<String>, List<List<String>>> revealClass(String className) {
 		try {
@@ -75,6 +80,8 @@ public class AdminDataManager {
 		
 		pimgSrvc.persistAll(pimg);
 		prsSrvc.persistsAll(prs);
+		
+		Util.PRODUCTS_AMOUNT = jdbcTemplate.queryForObject("Select count(*) from product", Integer.class);
 		return true;
 	}
 }

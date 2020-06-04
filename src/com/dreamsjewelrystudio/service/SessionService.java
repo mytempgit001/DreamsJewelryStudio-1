@@ -42,7 +42,7 @@ public class SessionService extends CRUDService<Session>{
 		em.close();
 	}
 	
-	public Session createNewSessionWithItems(Session session) {
+	public Session createNewSession(Session session) {
 		return sessRepository.saveAndFlush(session);
 	}
 	

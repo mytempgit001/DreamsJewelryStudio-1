@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.hibernate.annotations.QueryHints;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ public class ProductService extends CRUDService<Product>{
 		return prdRepository.saveAndFlush(product);
 	}
 	
+	@Cacheable("productsCache")
 	public List<Product> findProductsWithPriceLimit(int from, int limit){
 		EntityManager em = emf.createEntityManager();
 		List<Product> list = em.createQuery("SELECT p FROM Product p", Product.class)
@@ -47,16 +49,7 @@ public class ProductService extends CRUDService<Product>{
 		return list;
 	}
 	
-	public List<Product> findProductsWithPriceByTypeOrCategoryLimit(String arg, int from, int limit){
-		String attribute = "category";
-		if(arg.contains("Jewelry")) {
-			attribute = "product_type";
-			switch(arg) {
-				case "Epoxy Resin Jewelry": arg = "Resin"; break;
-				case "Gemstone Jewelry": arg = "Gemstone"; break;
-			}
-		}
-		
+	public List<Product> findProductsWithPriceByTypeOrCategoryLimit(String attribute, String arg, int from, int limit){
 		EntityManager em = emf.createEntityManager();
 		List<Product> list = em.createQuery("SELECT p "
 				+ "FROM Product p "
